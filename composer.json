@@ -1,0 +1,25 @@
+{
+    "name": "kevupton/beastcore",
+    "description": "Beast Mode eloquent for laravel",
+    "keywords": ["laravel", "eloquent", "beast", "beastmode", "beastcore"],
+    "type": "Extension",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Kevin Upton",
+            "email": "uptonkg@gmail.com"
+        }
+    ],
+    "require": {
+      "php": ">=5.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "Kevupton\\BeastCore\\": "src/Kevupton/BeastCore/"
+        },
+        "files": [
+            "src/Kevupton/BeastCore/Helpers/helpers.php"
+        ]
+    },
+    "minimum-stability": "stable"
+}
