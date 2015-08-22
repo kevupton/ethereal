@@ -10,11 +10,19 @@ class MorphModel extends BeastModel {
     protected $inputs = array();
     protected $morphColumns = array();
     protected $morph_name;
-    
+
+    //To be set by the host
+    protected $morphBy;
+    protected $morphTable;
+    protected $morphModel;
+
     public function __construct(array $attributes = array()) {
         $class = get_class($this);
         $this->morph_name = strtolower(last(explode("\\",$this->morphModel)));
-        $this->touches[] = $this->morph_name;
+        $vars = get_class_vars($this->morphModel);
+        if (isset($vars['timestamps']) && $vars['timestamps']) {
+            $this->touches[] = $this->morph_name;
+        }
         $class::$relationsData[$this->morph_name] = array(self::MORPH_ONE, $this->morphModel, $this->morphBy);
         $this->morphColumns = $this->getColumns($this->morphTable);
         parent::__construct($attributes);
