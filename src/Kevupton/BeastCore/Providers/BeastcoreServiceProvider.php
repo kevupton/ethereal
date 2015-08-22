@@ -1,6 +1,7 @@
 <?php namespace Kevupton\BeastCore\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Kevupton\BeastCore\CustomValidator;
 
 class BeastCoreServiceProvider extends ServiceProvider {
 
@@ -11,7 +12,10 @@ class BeastCoreServiceProvider extends ServiceProvider {
      */
     public function boot()
     {
-
+        \Validator::resolver(function($translator, $data, $rules, $messages)
+        {
+            return new CustomValidator($translator, $data, $rules, $messages);
+        });
     }
 
     /**

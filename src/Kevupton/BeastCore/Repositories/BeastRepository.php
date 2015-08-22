@@ -1,4 +1,4 @@
-<?php namespace Kevupton\BeastCore\Repository;
+<?php namespace Kevupton\BeastCore\Repositories;
 
 abstract class BeastRepository {
 
