@@ -1,7 +1,7 @@
 <?php namespace Kevupton\BeastCore\Repositories;
 
 abstract class BeastRepository {
-
+    private $cached;
     protected $exceptions = [];
 
     /**
@@ -56,4 +56,91 @@ abstract class BeastRepository {
         throw new $class($message);
     }
 
+    /**
+     * Get method for retrieving the data.
+     *
+     * @param $key
+     * @return null
+     */
+    public function __get($key) {
+        if (isset($this->$key)) {
+            return $this->$key;
+        } else {
+            return $this->cache($key);
+        }
+    }
+
+    /**
+     * Sets the param
+     *
+     * @param $key
+     * @param $val
+     * @return null
+     */
+    public function __set($key, $val) {
+        if (isset($this->$key)) {
+            return $this->$key;
+        } else {
+            return $this->cache($key, $val);
+        }
+    }
+
+    /**
+     * Gets or sets a cached value
+     *
+     * @param $key
+     * @param null $val
+     * @param bool $clear
+     * @return null
+     */
+    protected function cache($key, $val = null, $clear = false) {
+        if (isset($this->cached[$key]) && !$clear) {
+            return $this->cached[$key];
+        } else {
+            if (!is_null($val)) {
+                if (is_callable($val)) {
+                    $this->cached[$key] = $val();
+                } else $this->cached[$key] = $val;
+                return $this->cached[$key];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Clears the cached data
+     *
+     * @param null|string $key the specific key to clear
+     */
+    protected function cacheClear($key = null) {
+        if (!is_null($key) && isset($this->cached[$key])) {
+            unset($this->cached[$key]);
+        } else $this->cached = [];
+    }
+
+    /**
+     * Loads the element into the dom
+     *
+     * @param $id
+     * @return null
+     */
+    public function load($id) {
+        $val = null;
+        if (is_null($id)) return null;
+        elseif (is_a($id, $this->getClass())) {
+            $val = $id;
+        } elseif (is_numeric($id)) {
+            $val = $this->retrieveByID($id);
+        }
+        return $this->cache(strtolower($this->getClassShortName()), $val, true);
+    }
+
+    /**
+     * Returns the short name of the specified class attached to the repository.
+     *
+     * @return string the short name
+     */
+    public function getClassShortName() {
+        return last(explode("\\",$this->getClass()));
+    }
 }
