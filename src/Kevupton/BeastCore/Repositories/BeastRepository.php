@@ -1,5 +1,7 @@
 <?php namespace Kevupton\BeastCore\Repositories;
 
+use Illuminate\Database\Eloquent\Model;
+
 abstract class BeastRepository {
     private $cached;
     protected $exceptions = [];
@@ -33,7 +35,7 @@ abstract class BeastRepository {
      * Attempts to retrieve the Ticket by the given ticket ID.
      *
      * @param int $id the id of the ticket
-     * @return \stdClass an instance of the Repository class.
+     * @return Model an instance of the Repository class.
      * @throws \Exception of specified type if it is not found.
      */
     public final function retrieveByID($id) {
