@@ -38,11 +38,14 @@ class BeastModel extends Model {
         }
         $return = ($return === false)? false:true;
         $class = get_class($this);
-        $validate = Validator::make($this->attributes, $class::$rules);
-        foreach ($validate->errors()->getMessages() as $key => $msgs) {
-            $return = false;
-            foreach ($msgs as $msg) {
-                $this->validationErrors->add($key, $msg);
+
+        if (isset($class::$rules)) {
+            $validate = Validator::make($this->attributes, $class::$rules);
+            foreach ($validate->errors()->getMessages() as $key => $msgs) {
+                $return = false;
+                foreach ($msgs as $msg) {
+                    $this->validationErrors->add($key, $msg);
+                }
             }
         }
         return $return;
