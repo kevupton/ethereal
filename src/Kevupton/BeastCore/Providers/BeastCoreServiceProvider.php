@@ -25,6 +25,6 @@ class BeastCoreServiceProvider extends ServiceProvider {
      */
     public function register()
     {
-//
+
     }
 }
