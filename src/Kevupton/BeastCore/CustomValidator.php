@@ -14,6 +14,7 @@ class CustomValidator extends Validator {
     );
     public function __construct(TranslatorInterface $translator, array $data, array $rules, array $messages = array(), array $customAttributes = array()) {
         parent::__construct($translator, $data, $rules, $messages, $customAttributes);
+
         $this->setCustomMessages($this->msgs);
         $this->numericRules[] = 'ForeignInt';
     }

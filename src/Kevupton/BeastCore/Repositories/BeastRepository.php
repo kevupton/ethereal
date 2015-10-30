@@ -1,6 +1,8 @@
 <?php namespace Kevupton\BeastCore\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\MessageBag;
+use Kevupton\BeastCore\BeastModel;
 
 abstract class BeastRepository {
     private $cached;
@@ -144,5 +146,18 @@ abstract class BeastRepository {
      */
     public function getClassShortName() {
         return last(explode("\\",$this->getClass()));
+    }
+
+    /**
+     * Throws the errors as the main exception.
+     *
+     * @param BeastModel $model
+     * @param string $joiner
+     * @param string $exception_type
+     */
+    public function throwErrors(BeastModel $model, $joiner = "\n", $exception_type = "main") {
+        if ($model->errors()->count() > 0) {
+            $this->throwException(implode($joiner, $model->errors()->all()), $exception_type);
+        }
     }
 }
