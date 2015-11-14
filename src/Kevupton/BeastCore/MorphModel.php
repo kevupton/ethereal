@@ -18,7 +18,7 @@ class MorphModel extends BeastModel {
 
     public function __construct(array $attributes = array()) {
         $class = get_class($this);
-        $this->morph_name = strtolower(last(explode("\\",$this->morphModel)));
+        $this->morph_name = snake_case(last(explode("\\",$this->morphModel)));
         $vars = get_class_vars($this->morphModel);
         if (isset($vars['timestamps']) && $vars['timestamps']) {
             $this->touches[] = $this->morph_name;
@@ -71,7 +71,7 @@ class MorphModel extends BeastModel {
             $l->save();
         } else {
             $name = $this->morph_name;
-            $this->$name()->create($this->inputs);
+            $test = $this->$name()->create($this->inputs);
         }
     }
 
