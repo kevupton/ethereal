@@ -22,7 +22,7 @@ abstract class TestSuite {
      * @param $name the name of the class to be testing (for error purposes)
      * @param BeastModel $model the model to be testing.
      */
-    private function runRelationshipTests($name, BeastModel $model) {
+    protected function runRelationshipTests($name, BeastModel $model) {
         $class = get_class($model);
         $key = "";
         try {
