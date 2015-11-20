@@ -18,39 +18,39 @@ class CustomValidator extends Validator {
         $this->setCustomMessages($this->msgs);
         $this->numericRules[] = 'ForeignInt';
     }
-    
+
     protected function validateMaxDecimal($attribute, $value, $parameters)
     {
         $this->requireParameterCount(1, $parameters, 'max_decimal');
         return (bool) preg_match('/^[0-9]{0,' . $parameters[0] . '}(\.[0-9]+)?$/',(string) $value);
     }
-    
+
     protected function replaceMaxDecimal($message, $attribute, $rule, $parameters) {
         return str_replace(':whole', $parameters[0], $message);
     }
-    
+
     protected function validateMinDecimal($attribute, $value, $parameters)
     {
         $this->requireParameterCount(1, $parameters, 'min_decimal');
         return (bool) preg_match('/^[0-9]{' . $parameters[0] . ',}(\.[0-9]+)?$/',(string) $value);
     }
-    
+
     protected function replaceMinDecimal($message, $attribute, $rule, $parameters) {
         return str_replace(':whole', $parameters[0], $message);
     }
-    
-    protected function validateMaxDigits($attribute, $value, $parameters) 
+
+    protected function validateMaxDigits($attribute, $value, $parameters)
     {
         $this->requireParameterCount(1, $parameters, 'max_digits');
         return $this->validateNumeric($attribute, $value) 
                 && (strlen($value)) <= $parameters[0];
     }
-    
+
     protected function replaceMaxDigits($message, $attribute, $rule, $parameters) {
         return str_replace(':digits', $parameters[0], $message);
     }
-    
-    protected function validateMinDigits($attribute, $value, $parameters) 
+
+    protected function validateMinDigits($attribute, $value, $parameters)
     {
         $this->requireParameterCount(1, $parameters, 'min_digits');
         return $this->validateNumeric($attribute, $value) 
@@ -60,7 +60,7 @@ class CustomValidator extends Validator {
     protected function replaceMinDigits($message, $attribute, $rule, $parameters) {
         return str_replace(':digits', $parameters[0], $message);
     }
-    
+
     protected function validateForeignInt($attribute, $value, $parameters) {
         $this->requireParameterCount(2, $parameters, 'foreign_int');
         foreach (['Integer' => [], 'Min' => [1], 'MaxDigits' => [10], 'Exists' => $parameters] as $rule => $params) {

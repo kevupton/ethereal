@@ -31,16 +31,31 @@ class BeastModel extends Model {
     protected $validationErrors;
     protected static $unguarded = false;
 
+    protected $validator = CustomValidator::class;
+
     public function validate(array $rules = array(), array $customMessages = array()) {
         $return = true;
         if (method_exists($this, 'beforeValidate')) {
             $return = $this->beforeValidate();
         }
-        $return = ($return === false)? false:true;
-        $class = get_class($this);
+        $return = ($return === false)? false: $this->makeValidator();
 
+        return $return;
+    }
+
+    public function makeValidator() {
+        $return = true;
+        $class = get_class($this);
+        $validator = $this->validator;
         if (isset($class::$rules)) {
-            $validate = Validator::make($this->attributes, $class::$rules);
+
+            $validate = new $validator(app('translator'), $this->attributes, $class::$rules);
+            $presence = app('validation.presence');
+
+            if (isset($presence)) {
+                $validate->setPresenceVerifier($presence);
+            }
+
             foreach ($validate->errors()->getMessages() as $key => $msgs) {
                 $return = false;
                 foreach ($msgs as $msg) {
@@ -48,6 +63,7 @@ class BeastModel extends Model {
                 }
             }
         }
+
         return $return;
     }
 
