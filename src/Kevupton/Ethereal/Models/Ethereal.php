@@ -138,6 +138,10 @@ class Ethereal extends Model {
         return parent::__call($method, $parameters);
     }
 
+    public function hasErrors() {
+        return $this->validationErrors->count() > 0;
+    }
+
     public function morphTo($name = null, $type = null, $id = null) {
         if (is_null($name))
         {
