@@ -1,6 +1,5 @@
 <?php namespace Kevupton\Ethereal\Models;
 
-use Kevupton\Ethereal\Ethereal;
 use \Validator;
 
 class MorphModel extends Ethereal {

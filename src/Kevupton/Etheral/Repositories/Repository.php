@@ -1,7 +1,7 @@
 <?php namespace Kevupton\Ethereal\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
-use Kevupton\Ethereal\Ethereal;
+use Kevupton\Ethereal\Models\Ethereal;
 
 abstract class Repository {
     private $cached;

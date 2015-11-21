@@ -28,12 +28,34 @@ if (!function_exists('lumen_resource')) {
     /**
      * Creates a bunch of resource routes which link to the specified controller.
      *
-     * @param $app the application instance to run the methods on.
-     * @param $group
-     * @param $controller
-     * @param array $list
+     * @param $app Laravel\Lumen\Application application instance to run the methods on.
+     * @param $group string the id of the base route
+     * @param $controller string the controller class location to use.
+     * @param array $list the list of resources to use
+     * @param array $except the list of resources not to use
      */
-    function lumen_resource($app, $group, $controller, array $list = []) {
-
+    function lumen_resource($app, $group, $controller, array $list = [], array $except = []) {
+        $available = array(
+            'index' => ['get', '/'],
+            'create' => ['get', 'create'],
+            'store' => ['post', '/'],
+            'show' => ['get', '{id}'],
+            'edit' => ['get', '{id}/edit'],
+            'update' => ['put', '{id}'],
+            'destroy' => ['delete', '{id}']
+        );
+        if (empty($list)) $list = $available;
+        foreach ($except as &$val) {
+            $val = strtolower($val);
+        }
+        $keys = array_keys($available);
+        foreach ($list as $item) {
+            $val = strtolower($item);
+            if (in_array($val,$keys) && !in_array($val, $except)) {
+                $func = $available[$val][0];
+                $uri = $available[$val][1];
+                $app->$func($uri, ['as' => "$group.$val", 'uses' => "$controller@$val"]);
+            }
+        }
     }
 }
