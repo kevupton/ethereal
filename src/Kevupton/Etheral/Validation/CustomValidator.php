@@ -1,4 +1,4 @@
-<?php namespace Kevupton\BeastCore;
+<?php namespace Kevupton\Ethereal;
 
 use Illuminate\Validation\Validator;
 use Symfony\Component\Translation\TranslatorInterface;

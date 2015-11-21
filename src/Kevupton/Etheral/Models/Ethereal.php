@@ -1,15 +1,15 @@
-<?php namespace Kevupton\BeastCore;
+<?php namespace Kevupton\Ethereal\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\MessageBag;
-use Kevupton\BeastCore\Relations\HasManyThroughCustom;
+use Kevupton\Ethereal\Relations\HasManyThroughCustom;
 use Symfony\Component\Debug\Exception\NullMorphException;
 use \Validator;
 use \Auth;
 
-class BeastModel extends Model {
+class Ethereal extends Model {
     const HAS_MANY = "hasMany";
     const HAS_ONE = "hasOne";
     const BELONGS_TO_MANY = "belongsToMany";

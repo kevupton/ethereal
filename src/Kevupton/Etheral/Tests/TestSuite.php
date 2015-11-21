@@ -1,4 +1,4 @@
-<?php namespace Kevupton\BeastCore;
+<?php namespace Kevupton\Ethereal;
 
 abstract class TestSuite {
 
@@ -20,9 +20,9 @@ abstract class TestSuite {
      * Runs a test on all relationships for the given model
      *
      * @param $name the name of the class to be testing (for error purposes)
-     * @param BeastModel $model the model to be testing.
+     * @param Ethereal $model the model to be testing.
      */
-    protected function runRelationshipTests($name, BeastModel $model) {
+    protected function runRelationshipTests($name, Ethereal $model) {
         $class = get_class($model);
         $key = "";
         try {

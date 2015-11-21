@@ -22,3 +22,18 @@ if (!function_exists('mysql_datetime_format')) {
         return 'Y-m-d H:i:s';
     }
 }
+
+
+if (!function_exists('lumen_resource')) {
+    /**
+     * Creates a bunch of resource routes which link to the specified controller.
+     *
+     * @param $app the application instance to run the methods on.
+     * @param $group
+     * @param $controller
+     * @param array $list
+     */
+    function lumen_resource($app, $group, $controller, array $list = []) {
+
+    }
+}

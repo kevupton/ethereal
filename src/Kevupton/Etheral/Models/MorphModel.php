@@ -1,9 +1,9 @@
-<?php namespace Kevupton\BeastCore;
+<?php namespace Kevupton\Ethereal\Models;
 
-use Kevupton\BeastCore\BeastModel;
+use Kevupton\Ethereal\Ethereal;
 use \Validator;
 
-class MorphModel extends BeastModel {
+class MorphModel extends Ethereal {
     public $autoPurgeRedundantAttributes = false;
     // hydrates on new entries validation
 

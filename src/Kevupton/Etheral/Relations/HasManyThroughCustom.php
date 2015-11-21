@@ -1,6 +1,6 @@
 <?php
 
-namespace Kevupton\BeastCore\Relations;
+namespace Kevupton\Ethereal\Relations;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;

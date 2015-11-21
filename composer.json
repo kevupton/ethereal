@@ -1,7 +1,7 @@
 {
-    "name": "kevupton/beastcore",
-    "description": "Beast Mode eloquent for laravel",
-    "keywords": ["laravel", "eloquent", "beast", "beastmode", "beastcore"],
+    "name": "kevupton/ethereal",
+    "description": "Extension functionality for laravel",
+    "keywords": ["laravel", "eloquent", "ethereal"],
     "type": "Extension",
     "license": "MIT",
     "authors": [
@@ -15,10 +15,10 @@
     },
     "autoload": {
         "psr-4": {
-            "Kevupton\\BeastCore\\": "src/Kevupton/BeastCore/"
+            "Kevupton\\Ethereal\\": "src/Kevupton/Ethereal/"
         },
         "files": [
-            "src/Kevupton/BeastCore/Helpers/helpers.php"
+            "src/Kevupton/Ethereal/Helpers/helpers.php"
         ]
     },
     "minimum-stability": "stable"

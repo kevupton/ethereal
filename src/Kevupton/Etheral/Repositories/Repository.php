@@ -1,10 +1,9 @@
-<?php namespace Kevupton\BeastCore\Repositories;
+<?php namespace Kevupton\Ethereal\Repositories;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\MessageBag;
-use Kevupton\BeastCore\BeastModel;
+use Kevupton\Ethereal\Ethereal;
 
-abstract class BeastRepository {
+abstract class Repository {
     private $cached;
     protected $exceptions = [];
 
@@ -151,11 +150,11 @@ abstract class BeastRepository {
     /**
      * Throws the errors as the main exception.
      *
-     * @param BeastModel $model
+     * @param Ethereal $model
      * @param string $joiner
      * @param string $exception_type
      */
-    public function throwErrors(BeastModel $model, $joiner = "\n", $exception_type = "main") {
+    public function throwErrors(Ethereal $model, $joiner = "\n", $exception_type = "main") {
         if ($model->errors()->count() > 0) {
             $this->throwException(implode($joiner, $model->errors()->all()), $exception_type);
         }

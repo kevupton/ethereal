@@ -1,9 +1,9 @@
-<?php namespace Kevupton\BeastCore\Providers;
+<?php namespace Kevupton\Ethereal\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Kevupton\BeastCore\CustomValidator;
+use Kevupton\Ethereal\CustomValidator;
 
-class BeastCoreServiceProvider extends ServiceProvider {
+class EtherealServiceProvider extends ServiceProvider {
 
     /**
      * Bootstrap the application services.
