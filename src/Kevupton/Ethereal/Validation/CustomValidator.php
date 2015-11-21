@@ -1,4 +1,4 @@
-<?php namespace Kevupton\Ethereal;
+<?php namespace Kevupton\Ethereal\Validation;
 
 use Illuminate\Validation\Validator;
 use Symfony\Component\Translation\TranslatorInterface;

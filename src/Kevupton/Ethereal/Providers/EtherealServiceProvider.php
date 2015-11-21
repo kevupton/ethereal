@@ -1,7 +1,6 @@
 <?php namespace Kevupton\Ethereal\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Kevupton\Ethereal\CustomValidator;
 
 class EtherealServiceProvider extends ServiceProvider {
 
