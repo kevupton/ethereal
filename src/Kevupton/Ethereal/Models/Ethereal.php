@@ -38,33 +38,35 @@ class Ethereal extends Model {
         if (method_exists($this, 'beforeValidate')) {
             $return = $this->beforeValidate();
         }
-        $return = ($return === false)? false: $this->makeValidator();
-
-        return $return;
-    }
-
-    public function makeValidator() {
-        $return = true;
         $class = get_class($this);
-        $validator = $this->validator;
-        if (isset($class::$rules)) {
 
-            $validate = new $validator(app('translator'), $this->attributes, $class::$rules);
-            $presence = app('validation.presence');
-
-            if (isset($presence)) {
-                $validate->setPresenceVerifier($presence);
-            }
-
-            foreach ($validate->errors()->getMessages() as $key => $msgs) {
-                $return = false;
-                foreach ($msgs as $msg) {
-                    $this->validationErrors->add($key, $msg);
+        if (!$return) {
+            return false;
+        } else {
+            if (isset($class::$rules)) {
+                $validate = $this->makeValidator($this->attributes, $class::$rules);
+                foreach ($validate->errors()->getMessages() as $key => $msgs) {
+                    $return = false;
+                    foreach ($msgs as $msg) {
+                        $this->validationErrors->add($key, $msg);
+                    }
                 }
             }
+            return $return;
+        }
+    }
+
+    public function makeValidator($data, $rules) {
+        $validator = $this->validator;
+
+        $validate = new $validator(app('translator'), $data, $rules);
+        $presence = app('validation.presence');
+
+        if (isset($presence)) {
+            $validate->setPresenceVerifier($presence);
         }
 
-        return $return;
+        return $validate;
     }
 
     public function errors() {
@@ -233,18 +235,6 @@ class Ethereal extends Model {
         }
         return $query->get($attr);
     }
-
-//    public static function registerEvents() {
-//        self::saving(function($model) {
-//            if (!method_exists($model, 'beforeValidate') || $model->beforeValidate()) {
-//                return (method_exists($model, 'beforeSave')? $model->beforeSave(): true);
-//            }
-//            return false;
-//        });
-//        self::saved(function($model) {
-//            return (method_exists($model, 'afterSave')? $model->afterSave(): true);
-//        });
-//    }
 
     /**
      * Define a has-many-through relationship.

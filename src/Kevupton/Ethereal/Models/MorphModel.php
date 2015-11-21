@@ -1,7 +1,5 @@
 <?php namespace Kevupton\Ethereal\Models;
 
-use \Validator;
-
 class MorphModel extends Ethereal {
     public $autoPurgeRedundantAttributes = false;
     // hydrates on new entries validation
@@ -26,7 +24,7 @@ class MorphModel extends Ethereal {
         $this->morphColumns = $this->getColumns($this->morphTable);
         parent::__construct($attributes);
     }
-   
+
     public function __get($key) {
         $x = parent::__get($key);
         if ($x == null) {
@@ -37,7 +35,7 @@ class MorphModel extends Ethereal {
         }
         return $x;
     }
-    
+
     public function __set($key, $value) {
         $is_morph_column = in_array($key, $this->morphColumns);
         $is_table_column = in_array($key, $this->tableColumns);
@@ -62,7 +60,7 @@ class MorphModel extends Ethereal {
         }
         return $value;
     }
-    
+
     public function afterSave() {
         $name = $this->morph_name;
         $l = $this->$name;
@@ -87,7 +85,7 @@ class MorphModel extends Ethereal {
         }
         return $validate->passes() && $return;
     }
-    
+
     public function fill(array $attributes) {
         $return = parent::fill($attributes);
         $name = $this->morph_name;
@@ -99,14 +97,14 @@ class MorphModel extends Ethereal {
         }
         return $return;
     }
-    
+
     private function validateData($data) {
         $name = $this->morphModel;
         $rules = $name::$rules;
         unset($rules[$this->morphBy . '_id'], $rules[$this->morphBy . '_type']);
-        return Validator::make($data, $rules);
+        return $this->makeValidator($data, $rules);
     }
-    
+
     public function delete() {
         $name = $this->morph_name;
         $l = $this->$name;
