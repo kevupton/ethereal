@@ -47,7 +47,7 @@ if (!function_exists('lumen_resource')) {
             'update' => ['put', $id],
             'destroy' => ['delete', '{id}']
         );
-        if (empty($list)) $list = $available;
+        if (empty($list)) $list = array_keys($available);
         foreach ($except as &$val) {
             $val = strtolower($val);
         }
