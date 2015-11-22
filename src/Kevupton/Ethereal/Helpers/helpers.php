@@ -29,7 +29,7 @@ if (!function_exists('lumen_resource')) {
      * Creates a bunch of resource routes which link to the specified controller.
      *
      * @param $app Laravel\Lumen\Application application instance to run the methods on.
-     * @param $prefix the prefix of the application URL.
+     * @param $prefix string the prefix of the application URL.
      * @param $group string the id of the base route
      * @param $controller string the controller class location to use.
      * @param array $list the list of resources to use
