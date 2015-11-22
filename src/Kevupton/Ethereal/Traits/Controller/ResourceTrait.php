@@ -6,6 +6,9 @@ use Kevupton\Ethereal\Models\Ethereal;
 use Kevupton\Ethereal\Utils\Json;
 
 trait ResourceTrait {
+
+    protected $required_id = true;
+
     /** @var  Json */
     protected $response;
     protected $from_key = 'from';
@@ -20,12 +23,23 @@ trait ResourceTrait {
     );
     private $error_messages = array();
 
+
     /**
      * Gets the current objects class
      *
      * @return string the Ethereal class name
      */
     abstract function getClass();
+
+    /**
+     * Validate that the id is not null
+     *
+     * @param $id
+     * @throws \ErrorException
+     */
+    private function validateId($id) {
+        if (is_null($id) && $this->required_id) throw new \ErrorException();
+    }
 
     /**
      * Executes the main functionality providing before and after situations.
@@ -118,14 +132,25 @@ trait ResourceTrait {
     public function index(Request $request) {
         return $this->execute($request, 'index', function() use($request) {
             $class = $this->getClass();
+            $query = $class::query();
             if ($this->paginate) {
-                $query = $this->paginate($request, $class::query());
-                $results = $query->get()->all();
-            } else {
-                $results = $class::all()->all();
+                $this->paginate($request, $query);
             }
-            $this->response->addData('results', $results);
+            $results = $this->indexLogic($request, $query);
+            $name = ($results instanceof Ethereal)? 'class': 'results';
+            $this->response->addData($name, $results);
         });
+    }
+
+    /**
+     * The index logic of the program. Returns the results to be displayed.
+     *
+     * @param Request $request
+     * @param Builder $query
+     * @return mixed
+     */
+    protected function indexLogic(Request $request, Builder $query) {
+        return $query->get()->all();
     }
 
     /**
@@ -183,7 +208,8 @@ trait ResourceTrait {
      * @param $id
      * @return string
      */
-    public function show(Request $request, $id) {
+    public function show(Request $request, $id = null) {
+        $this->validateId($id);
         return $this->execute($request,'show', function() use ($request, $id) {
             $class = $this->getClass();
 
@@ -208,7 +234,8 @@ trait ResourceTrait {
      * @param $id
      * @return string
      */
-    public function edit(Request $request, $id) {
+    public function edit(Request $request, $id = null) {
+        $this->validateId($id);
         return $this->execute($request,'edit', function() use ($request, $id) {
             $class = $this->getClass();
 
@@ -231,7 +258,8 @@ trait ResourceTrait {
         });
     }
 
-    public function update(Request $request, $id) {
+    public function update(Request $request, $id = null) {
+        $this->validateId($id);
         return $this->execute($request,'update', function() use ($request, $id) {
             $class = $this->getClass();
 
@@ -254,7 +282,8 @@ trait ResourceTrait {
         });
     }
 
-    public function delete(Request $request, $id) {
+    public function delete(Request $request, $id = null) {
+        $this->validateId($id);
         return $this->execute($request,'delete', function() use ($request, $id) {
             $class = $this->getClass();
 
