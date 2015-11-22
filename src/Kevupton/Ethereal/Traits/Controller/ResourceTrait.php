@@ -13,6 +13,7 @@ trait ResourceTrait {
     protected $take_key = 'take';
     protected $take_default = 10;
     protected $from_default = 0;
+    protected $paginate = true;
 
     private $trans_errors = array();
     private $default_errors = array(
@@ -118,8 +119,13 @@ trait ResourceTrait {
     public function index(Request $request) {
         return $this->execute($request, 'index', function() use($request) {
             $class = $this->getClass();
-            $query = $this->paginate($request, $class::query());
-            $this->response->addData('results', $query->get());
+            if ($this->paginate) {
+                $query = $this->paginate($request, $class::query());
+                $results = $query->get()->all();
+            } else {
+                $results = $class::all()->all();
+            }
+            $this->response->addData('results', $results);
         });
     }
 
