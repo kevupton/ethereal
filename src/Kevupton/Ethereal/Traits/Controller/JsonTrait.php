@@ -9,6 +9,7 @@ trait JsonTrait {
 
     /** @var  Json */
     protected $response;
+    protected $status_code = 200;
 
     public function newJson() {
         $this->response = new Json();

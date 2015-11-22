@@ -6,8 +6,6 @@ use Kevupton\Ethereal\Models\Ethereal;
 
 trait ResourceTrait {
 
-    use JsonTrait;
-
     protected $required_id = true;
 
     protected $from_key = 'from';

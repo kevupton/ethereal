@@ -11,7 +11,7 @@ class Json {
             if (!is_null($val)) {
                 $this->errors[$key] = $val;
             } else {
-                $this->errors[] = $val;
+                $this->errors[] = $key;
             }
         }
     }
