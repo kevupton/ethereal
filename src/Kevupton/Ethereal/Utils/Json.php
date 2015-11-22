@@ -3,6 +3,7 @@
 class Json {
     private $data = array();
     private $errors = array();
+    private $token = null;
 
     public function addError($key, $val = null) {
         if (is_array($key)) {
@@ -41,11 +42,14 @@ class Json {
     }
 
     public function toArray() {
-        return [
+        $data =  [
             'data' => $this->data,
             'errors' => $this->errors,
             'success' => $this->isSuccess()
         ];
+        if (!is_null($this->token)) $data['token'] = $this->token;
+
+        return $data;
     }
 
     public function __toString() {
@@ -58,5 +62,9 @@ class Json {
 
     public function hasErrors() {
         return count($this->errors) > 0;
+    }
+
+    public function setToken($token) {
+        $this->token = $token;
     }
 }

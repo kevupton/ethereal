@@ -51,18 +51,18 @@ trait ResourceTrait {
      * @return string
      */
     private function execute(Request $request, $type, callable $callable) {
-        $this->newJson();
+        if (!$this->hasError()) {
+            $type = ucfirst(strtolower($type));
 
-        $type = ucfirst(strtolower($type));
-
-        if (method_exists($this, "before$type")) $this->{"before$type"}($request);
-        if ($this->response->isSuccess()) {
-            $callable($this->response, $request);
-            if ($this->response->isSuccess() &&
-                method_exists($this, "after$type")) $this->{"after$type"}($request);
+            if (method_exists($this, "before$type")) $this->{"before$type"}($request);
+            if ($this->isSuccess()) {
+                $callable($this->json(), $request);
+                if ($this->isSuccess() &&
+                    method_exists($this, "after$type")) $this->{"after$type"}($request);
+            }
         }
 
-        return $this->response->out();
+        return $this->json()->out();
     }
 
     /**
@@ -140,7 +140,7 @@ trait ResourceTrait {
             }
             $results = $this->indexLogic($request, $query);
             $name = ($results instanceof Ethereal || is_null($results))? 'class': 'results';
-            $this->response->addData($name, $results, true);
+            $this->json()->addData($name, $results, true);
         });
     }
 
@@ -172,9 +172,9 @@ trait ResourceTrait {
             $object->save();
 
             if ($object->hasErrors()) {
-                $this->response->addError($object->errors()->all());
+                $this->json()->addError($object->errors()->all());
             } else {
-                $this->response->addData('class', $object->getAttributes());
+                $this->json()->addData('class', $object->getAttributes());
             }
         });
     }
@@ -196,9 +196,9 @@ trait ResourceTrait {
             $object->save();
 
             if ($object->hasErrors()) {
-                $this->response->addError($object->errors()->all());
+                $this->json()->addError($object->errors()->all());
             } else {
-                $this->response->addData('class', $object->getAttributes());
+                $this->json()->addData('class', $object->getAttributes());
             }
         });
     }
@@ -219,12 +219,12 @@ trait ResourceTrait {
             $object = $class::find($id);
 
             if (is_null($object)) {
-                $this->response->addError($this->getErrorMessage('not_found', [
+                $this->json()->addError($this->getErrorMessage('not_found', [
                     'class' => $this->getClass(),
                     'val' => $id
                 ]));
             } else {
-                $this->response->addData('class', $object->getAttributes());
+                $this->json()->addData('class', $object->getAttributes());
             }
         });
     }
@@ -245,7 +245,7 @@ trait ResourceTrait {
             $object = $class::find($id);
 
             if (is_null($object)) { //if the object was not found then add an error
-                $this->response->addError($this->getErrorMessage('not_found', [
+                $this->json()->addError($this->getErrorMessage('not_found', [
                     'class' => $this->getClass(),
                     'val' => $id
                 ]));
@@ -254,7 +254,7 @@ trait ResourceTrait {
                 $object->save();
 
                 if ($object->hasErrors()) { //if the edit function failed
-                    $this->response->addError($object->errors()->all());
+                    $this->json()->addError($object->errors()->all());
                 }
             }
         });
@@ -269,7 +269,7 @@ trait ResourceTrait {
             $object = $class::find($id);
 
             if (is_null($object)) { //if the object was not found then add an error
-                $this->response->addError($this->getErrorMessage('not_found', [
+                $this->json()->addError($this->getErrorMessage('not_found', [
                     'class' => $this->getClass(),
                     'val' => $id
                 ]));
@@ -278,7 +278,7 @@ trait ResourceTrait {
                 $object->save();
 
                 if ($object->hasErrors()) { //if the edit function failed
-                    $this->response->addError($object->errors()->all());
+                    $this->json()->addError($object->errors()->all());
                 }
             }
         });
@@ -293,7 +293,7 @@ trait ResourceTrait {
             $object = $class::find($id);
 
             if (is_null($object)) { //if the object was not found then add an error
-                $this->response->addError($this->getErrorMessage('not_found', [
+                $this->json()->addError($this->getErrorMessage('not_found', [
                     'class' => $this->getClass(),
                     'val' => $id
                 ]));
@@ -302,7 +302,7 @@ trait ResourceTrait {
                 $object->delete();
 
                 if ($object->hasErrors()) { //if the edit function failed
-                    $this->response->addError($object->errors()->all());
+                    $this->json()->addError($object->errors()->all());
                 }
             }
         });

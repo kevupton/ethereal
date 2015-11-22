@@ -1,18 +1,19 @@
 <?php namespace Kevupton\Ethereal\Traits\Controller;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
-use Kevupton\Ethereal\Models\Ethereal;
 use Kevupton\Ethereal\Utils\Json;
 
 trait JsonTrait {
 
     /** @var  Json */
-    protected $response;
+    protected $response = null;
     protected $status_code = 200;
 
     public function newJson() {
-        $this->response = new Json();
+        return ($this->response = new Json());
+    }
+
+    public function json() {
+        return (is_null($this->response))? $this->newJson(): $this->response;
     }
 
     public function hasErrors() {
