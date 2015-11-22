@@ -1,10 +1,9 @@
 <?php namespace Kevupton\Ethereal\Traits\Controller;
 
-use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Kevupton\Ethereal\Models\Ethereal;
 use Kevupton\Ethereal\Utils\Json;
-use Mevu\Logic\Core\Models\Purchase;
 
 trait ResourceTrait {
     /** @var  Json */
