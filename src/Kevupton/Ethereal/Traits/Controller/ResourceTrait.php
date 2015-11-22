@@ -51,7 +51,7 @@ trait ResourceTrait {
      * @return string
      */
     private function execute(Request $request, $type, callable $callable) {
-        if (!$this->hasError()) {
+        if (!$this->hasErrors()) {
             $type = ucfirst(strtolower($type));
 
             if (method_exists($this, "before$type")) $this->{"before$type"}($request);

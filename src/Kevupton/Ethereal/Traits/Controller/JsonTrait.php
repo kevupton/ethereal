@@ -1,5 +1,8 @@
 <?php namespace Kevupton\Ethereal\Traits\Controller;
 
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\Request;
+use Kevupton\Ethereal\Models\Ethereal;
 use Kevupton\Ethereal\Utils\Json;
 
 trait JsonTrait {
@@ -17,11 +20,11 @@ trait JsonTrait {
     }
 
     public function hasErrors() {
-        return $this->response->hasErrors();
+        return $this->json()->hasErrors();
     }
 
     public function isSuccess() {
-        return $this->response->isSuccess();
+        return $this->json()->isSuccess();
     }
 
 }
