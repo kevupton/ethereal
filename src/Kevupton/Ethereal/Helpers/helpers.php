@@ -43,7 +43,7 @@ if (!function_exists('lumen_resource')) {
             'create' => ['get', 'create'],
             'store' => ['post', ''],
             'show' => ['get', $id],
-            'edit' => ['get', $id . (!$require_id? "": "/edit")],
+            'edit' => ['get', $id . (!$require_id? "": "/") . "edit"],
             'update' => ['put', $id],
             'destroy' => ['delete', '{id}']
         );
