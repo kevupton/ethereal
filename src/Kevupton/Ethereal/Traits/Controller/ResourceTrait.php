@@ -1,12 +1,18 @@
 <?php namespace Kevupton\Ethereal\Traits\Controller;
 
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Kevupton\Ethereal\Models\Ethereal;
 use Kevupton\Ethereal\Utils\Json;
+use Mevu\Logic\Core\Models\Purchase;
 
 trait ResourceTrait {
     /** @var  Json */
     private $response;
+    protected $from_key = 'from';
+    protected $take_key = 'take';
+    protected $take_default = 10;
+    protected $from_default = 0;
 
     private $trans_errors = array();
     private $default_errors = array(
@@ -41,6 +47,27 @@ trait ResourceTrait {
         }
 
         return $this->response->out();
+    }
+
+    /**
+     * Applies the pagination rules to the given query
+     *
+     * @param Request $request the request
+     * @param Builder $query the query of the object
+     * @return Builder
+     */
+    private function paginate(Request $request, Builder $query) {
+        $from = $request->get($this->from_key);
+        $take = $request->get($this->take_key);
+
+        if (!is_null($from) || !is_null($take)) {
+            $from = ($from)?: $this->from_default;
+            $take = ($take)?: $this->take_default;
+
+            $query->take($take)->skip($from);
+        }
+
+        return $query;
     }
 
     /**
@@ -89,9 +116,10 @@ trait ResourceTrait {
      * @return string
      */
     public function index(Request $request) {
-        return $this->execute($request, 'index', function() {
+        return $this->execute($request, 'index', function() use($request) {
             $class = $this->getClass();
-            $this->response->addData('results', $class::all()->all());
+            $query = $this->paginate($request, $class::query());
+            $this->response->addData('results', $query->get());
         });
     }
 

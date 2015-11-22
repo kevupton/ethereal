@@ -34,15 +34,17 @@ if (!function_exists('lumen_resource')) {
      * @param $controller string the controller class location to use.
      * @param array $list the list of resources to use
      * @param array $except the list of resources not to use
+     * @param bool $require_id
      */
-    function lumen_resource($app, $prefix, $group, $controller, array $list = [], array $except = []) {
+    function lumen_resource($app, $prefix, $group, $controller, array $list = [], array $except = [], $require_id = true) {
+        $id = $require_id? '{id}': '';
         $available = array(
-            'index' => ['get', '/'],
+            'index' => ['get', ''],
             'create' => ['get', 'create'],
-            'store' => ['post', '/'],
-            'show' => ['get', '{id}'],
-            'edit' => ['get', '{id}/edit'],
-            'update' => ['put', '{id}'],
+            'store' => ['post', ''],
+            'show' => ['get', $id],
+            'edit' => ['get', $id . (!$require_id? "": "/edit")],
+            'update' => ['put', $id],
             'destroy' => ['delete', '{id}']
         );
         if (empty($list)) $list = $available;
@@ -51,12 +53,20 @@ if (!function_exists('lumen_resource')) {
         }
         $keys = array_keys($available);
         foreach ($list as $item) {
-            $val = strtolower($item);
-            if (in_array($val,$keys) && !in_array($val, $except)) {
-                $func = $available[$val][0];
-                $uri = $available[$val][1];
-                $app->$func("$prefix/$uri", ['as' => "$group.$val", 'uses' => "$controller@$val"]);
+            $func = null;
+            if (is_array($item)) {
+                $val =  $item[0];
+                $func = $item[1];
+                $uri =  $item[2];
+            } else {
+                $val = strtolower($item);
+                if (in_array($val,$keys) && !in_array($val, $except)) {
+                    $func = $available[$val][0];
+                    $uri = $available[$val][1];
+                }
             }
+            if (!is_null($func))
+                $app->$func("$prefix/$uri", ['as' => "$group.$val", 'uses' => "$controller@$val"]);
         }
     }
 }
