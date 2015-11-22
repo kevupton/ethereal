@@ -7,7 +7,7 @@ use Kevupton\Ethereal\Utils\Json;
 
 trait ResourceTrait {
     /** @var  Json */
-    private $response;
+    protected $response;
     protected $from_key = 'from';
     protected $take_key = 'take';
     protected $take_default = 10;
