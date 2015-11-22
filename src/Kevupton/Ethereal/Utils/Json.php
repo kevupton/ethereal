@@ -16,14 +16,14 @@ class Json {
         }
     }
 
-    public function addData($key, $val = null) {
+    public function addData($key, $val = null, $use_null = false) {
         if (is_array($key)) {
             $this->data = array_merge($this->data, $key);
         } else {
-            if (!is_null($val)) {
+            if (!is_null($val) || $use_null) {
                 $this->data[$key] = $val;
             } else {
-                $this->data[] = $val;
+                $this->data[] = $key;
             }
         }
     }
@@ -37,11 +37,15 @@ class Json {
     }
 
     public function out() {
-        return json_encode([
+        return json_encode($this->toArray());
+    }
+
+    public function toArray() {
+        return [
             'data' => $this->data,
             'errors' => $this->errors,
             'success' => $this->isSuccess()
-        ]);
+        ];
     }
 
     public function __toString() {
