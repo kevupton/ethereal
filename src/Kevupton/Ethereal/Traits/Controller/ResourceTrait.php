@@ -1,6 +1,6 @@
 <?php namespace Kevupton\Ethereal\Traits\Controller;
 
-use App\Http\Requests\Request;
+use Illuminate\Http\Request;
 use Kevupton\Ethereal\Models\Ethereal;
 use Kevupton\Ethereal\Utils\Json;
 
@@ -10,7 +10,7 @@ trait ResourceTrait {
 
     private $trans_errors = array();
     private $default_errors = array(
-        'not_found' => [404, 'Error :val not found in :class not found.']
+        'not_found' => [404, 'Error :val not found in :class data.']
     );
     private $error_messages = array();
 
@@ -91,7 +91,7 @@ trait ResourceTrait {
     public function index(Request $request) {
         return $this->execute($request, 'index', function() {
             $class = $this->getClass();
-            $this->response->addData('results', $class::all());
+            $this->response->addData('results', $class::all()->all());
         });
     }
 
@@ -113,6 +113,8 @@ trait ResourceTrait {
 
             if ($object->hasErrors()) {
                 $this->response->addError($object->errors()->all());
+            } else {
+                $this->response->addData('class', $object->getAttributes());
             }
         });
     }
@@ -135,6 +137,8 @@ trait ResourceTrait {
 
             if ($object->hasErrors()) {
                 $this->response->addError($object->errors()->all());
+            } else {
+                $this->response->addData('class', $object->getAttributes());
             }
         });
     }
@@ -158,6 +162,8 @@ trait ResourceTrait {
                     'class' => $this->getClass(),
                     'val' => $id
                 ]));
+            } else {
+                $this->response->addData('class', $object->getAttributes());
             }
         });
     }
