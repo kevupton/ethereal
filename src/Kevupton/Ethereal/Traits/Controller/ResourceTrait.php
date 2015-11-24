@@ -50,13 +50,14 @@ trait ResourceTrait {
      * @param callable $callable the calling function to do in between.
      * @return string
      */
-    private function execute(Request $request, $type, callable $callable) {
+    private function execute(Request $request, $type, array $data = array()) {
         if (!$this->hasErrors()) {
             $type = ucfirst(strtolower($type));
 
             if (method_exists($this, "before$type")) $this->{"before$type"}($request);
             if ($this->isSuccess()) {
-                $callable($this->json(), $request);
+                $callable = $type . 'Main';
+                call_user_func_array([$this, $callable], array_merge([$request], $data));
                 if ($this->isSuccess() &&
                     method_exists($this, "after$type")) $this->{"after$type"}($request);
             }
@@ -69,10 +70,10 @@ trait ResourceTrait {
      * Applies the pagination rules to the given query
      *
      * @param Request $request the request
-     * @param Builder $query the query of the object
-     * @return Builder
+     * @param mixed $query the query of the object
+     * @return mixed
      */
-    private function paginate(Request $request, Builder $query) {
+    protected function paginate(Request $request, $query) {
         $from = $request->get($this->from_key);
         $take = $request->get($this->take_key);
 
@@ -132,26 +133,41 @@ trait ResourceTrait {
      * @return string
      */
     public function index(Request $request) {
-        return $this->execute($request, 'index', function() use($request) {
-            $class = $this->getClass();
-            $query = $class::query();
-            if ($this->paginate) {
-                $this->paginate($request, $query);
-            }
-            $results = $this->indexLogic($request, $query);
-            $name = ($results instanceof Ethereal || is_null($results))? 'class': 'results';
-            $this->json()->addData($name, $results, true);
-        });
+        return $this->execute($request, 'index');
+    }
+
+    /**
+     * Function which handles the main results for the index logic.
+     * Override to create custom logic.
+     *
+     * @param Request $request
+     */
+    protected function indexMain(Request $request) {
+
+        $class = $this->getClass();
+        $query = $class::query();
+
+        if ($this->paginate) {
+            $this->paginate($request, $query);
+        }
+
+        $results = $this->indexLogic($request, $query);
+
+        $name = ($results instanceof Ethereal || is_null($results))? 'class': 'results';
+
+        $this->json()->addData($name, $results, true);
+
     }
 
     /**
      * The index logic of the program. Returns the results to be displayed.
+     * Override to change the default logic query.
      *
      * @param Request $request
-     * @param Builder $query
+     * @param mixed $query
      * @return mixed
      */
-    protected function indexLogic(Request $request, Builder $query) {
+    protected function indexLogic(Request $request, $query) {
         return $query->get()->all();
     }
 
@@ -162,21 +178,29 @@ trait ResourceTrait {
      * @return string
      */
     public function create(Request $request) {
-        return $this->execute($request,'create', function() use ($request) {
-            $class = $this->getClass();
+        return $this->execute($request,'create');
+    }
 
-            /** @var Ethereal $object */
-            $object = new $class();
-            $object->fill($request->all());
+    /**
+     * The create logic of the program. Returns the results to be displayed.
+     * Override to change the default logic query.
+     *
+     * @param Request $request
+     */
+    protected function createMain(Request $request) {
+        $class = $this->getClass();
 
-            $object->save();
+        /** @var Ethereal $object */
+        $object = new $class();
+        $object->fill($request->all());
 
-            if ($object->hasErrors()) {
-                $this->json()->addError($object->errors()->all());
-            } else {
-                $this->json()->addData('class', $object->getAttributes());
-            }
-        });
+        $object->save();
+
+        if ($object->hasErrors()) {
+            $this->json()->addError($object->errors()->all());
+        } else {
+            $this->json()->addData('class', $object->getAttributes());
+        }
     }
 
     /**
@@ -186,21 +210,29 @@ trait ResourceTrait {
      * @return string the json response
      */
     public function store(Request $request) {
-        return $this->execute($request,'store', function() use ($request) {
-            $class = $this->getClass();
+        return $this->execute($request,'store');
+    }
 
-            /** @var Ethereal $object */
-            $object = new $class();
-            $object->fill($request->all());
+    /**
+     * The store logic of the program. Returns the results to be displayed.
+     * Override to change the default logic query.
+     *
+     * @param Request $request
+     */
+    protected function storeMain(Request $request) {
+        $class = $this->getClass();
 
-            $object->save();
+        /** @var Ethereal $object */
+        $object = new $class();
+        $object->fill($request->all());
 
-            if ($object->hasErrors()) {
-                $this->json()->addError($object->errors()->all());
-            } else {
-                $this->json()->addData('class', $object->getAttributes());
-            }
-        });
+        $object->save();
+
+        if ($object->hasErrors()) {
+            $this->json()->addError($object->errors()->all());
+        } else {
+            $this->json()->addData('class', $object->getAttributes());
+        }
     }
 
     /**
@@ -212,22 +244,31 @@ trait ResourceTrait {
      */
     public function show(Request $request, $id = null) {
         $this->validateId($request, $id);
-        return $this->execute($request,'show', function() use ($request, $id) {
-            $class = $this->getClass();
-
-            /** @var Ethereal $object */
-            $object = $class::find($id);
-
-            if (is_null($object)) {
-                $this->json()->addError($this->getErrorMessage('not_found', [
-                    'class' => $this->getClass(),
-                    'val' => $id
-                ]));
-            } else {
-                $this->json()->addData('class', $object->getAttributes());
-            }
-        });
+        return $this->execute($request, 'show', [$id]);
     }
+
+    /**
+     * The show logic of the program. Returns the results to be displayed.
+     * Override to change the default logic query.
+     *
+     * @param Request $request
+     */
+    protected function showMain(Request $request, $id) {
+        $class = $this->getClass();
+
+        /** @var Ethereal $object */
+        $object = $class::find($id);
+
+        if (is_null($object)) {
+            $this->json()->addError($this->getErrorMessage('not_found', [
+                'class' => $this->getClass(),
+                'val' => $id
+            ]));
+        } else {
+            $this->json()->addData('class', $object->getAttributes());
+        }
+    }
+
 
     /**
      * Get method for editting data
@@ -238,73 +279,113 @@ trait ResourceTrait {
      */
     public function edit(Request $request, $id = null) {
         $this->validateId($request, $id);
-        return $this->execute($request,'edit', function() use ($request, $id) {
-            $class = $this->getClass();
-
-            /** @var Ethereal $object */
-            $object = $class::find($id);
-
-            if (is_null($object)) { //if the object was not found then add an error
-                $this->json()->addError($this->getErrorMessage('not_found', [
-                    'class' => $this->getClass(),
-                    'val' => $id
-                ]));
-            } else {
-                $object->fill($request->all());
-                $object->save();
-
-                if ($object->hasErrors()) { //if the edit function failed
-                    $this->json()->addError($object->errors()->all());
-                }
-            }
-        });
+        return $this->execute($request,'edit', [$id]);
     }
 
+    /**
+     * The edit logic of the program. Returns the results to be displayed.
+     * Override to change the default logic query.
+     *
+     * @param Request $request
+     * @param $id
+     */
+    protected function editMain(Request $request, $id) {
+        $class = $this->getClass();
+
+        /** @var Ethereal $object */
+        $object = $class::find($id);
+
+        if (is_null($object)) { //if the object was not found then add an error
+            $this->json()->addError($this->getErrorMessage('not_found', [
+                'class' => $this->getClass(),
+                'val' => $id
+            ]));
+        } else {
+            $object->fill($request->all());
+            $object->save();
+
+            if ($object->hasErrors()) { //if the edit function failed
+                $this->json()->addError($object->errors()->all());
+            }
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param null $id
+     * @return string
+     * @throws \ErrorException
+     */
     public function update(Request $request, $id = null) {
         $this->validateId($request, $id);
-        return $this->execute($request,'update', function() use ($request, $id) {
-            $class = $this->getClass();
-
-            /** @var Ethereal $object */
-            $object = $class::find($id);
-
-            if (is_null($object)) { //if the object was not found then add an error
-                $this->json()->addError($this->getErrorMessage('not_found', [
-                    'class' => $this->getClass(),
-                    'val' => $id
-                ]));
-            } else {
-                $object->fill($request->all());
-                $object->save();
-
-                if ($object->hasErrors()) { //if the edit function failed
-                    $this->json()->addError($object->errors()->all());
-                }
-            }
-        });
+        return $this->execute($request,'update', [$id]);
     }
 
+    /**
+     * The update logic of the program. Returns the results to be displayed.
+     * Override to change the default logic query.
+     *
+     * @param Request $request
+     * @param $id
+     */
+    protected function updateMain(Request $request, $id) {
+        $class = $this->getClass();
+
+        /** @var Ethereal $object */
+        $object = $class::find($id);
+
+        if (is_null($object)) { //if the object was not found then add an error
+            $this->json()->addError($this->getErrorMessage('not_found', [
+                'class' => $this->getClass(),
+                'val' => $id
+            ]));
+        } else {
+            $object->fill($request->all());
+            $object->save();
+
+            if ($object->hasErrors()) { //if the edit function failed
+                $this->json()->addError($object->errors()->all());
+            }
+        }
+    }
+
+    /**
+     * @param Request $request
+     * @param null $id
+     * @return string
+     * @throws \ErrorException
+     */
     public function delete(Request $request, $id = null) {
         $this->validateId($request, $id);
-        return $this->execute($request,'delete', function() use ($request, $id) {
-            $class = $this->getClass();
+        return $this->execute($request,'delete', [$id]);
+    }
 
-            /** @var Ethereal $object */
-            $object = $class::find($id);
+    /**
+     * The delete logic of the program. Returns the results to be displayed.
+     * Override to change the default logic query.
+     *
+     * @param Request $request
+     * @param $id
+     * @throws \Exception
+     */
+    protected function deleteMain(Request $request, $id) {
+        $class = $this->getClass();
 
-            if (is_null($object)) { //if the object was not found then add an error
-                $this->json()->addError($this->getErrorMessage('not_found', [
-                    'class' => $this->getClass(),
-                    'val' => $id
-                ]));
-            } else {
-                $object->fill($request->all());
-                $object->delete();
+        /** @var Ethereal $object */
+        $object = $class::find($id);
 
-                if ($object->hasErrors()) { //if the edit function failed
-                    $this->json()->addError($object->errors()->all());
-                }
+        if (is_null($object)) { //if the object was not found then add an error
+            $this->json()->addError($this->getErrorMessage('not_found', [
+                'class' => $this->getClass(),
+                'val' => $id
+            ]));
+        } else {
+            $object->fill($request->all());
+            $object->delete();
+
+            if ($object->hasErrors()) { //if the edit function failed
+                $this->json()->addError($object->errors()->all());
             }
-        });
+        }
     }
 }
