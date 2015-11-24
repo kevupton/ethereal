@@ -1,11 +1,18 @@
 <?php namespace Kevupton\Ethereal\Repositories;
 
+use Exception;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Eloquent\Builder as EBuilder;
 use Kevupton\Ethereal\Models\Ethereal;
 
 abstract class Repository {
     private $cached;
     protected $exceptions = [];
+
+    /** @var Builder|EBuilder */
+    private $query = null;
 
     /**
      * Retrieves the class instance of the specified repository.
@@ -25,7 +32,7 @@ abstract class Repository {
             return $this->exceptions[$exception];
         } else {
             if ($exception == 'main') {
-                return \Exception::class;
+                return Exception::class;
             } else {
                 return $this->getException();
             }
@@ -33,19 +40,58 @@ abstract class Repository {
     }
 
     /**
+     * Returns a new query instance from either Eloquent or the DB depending
+     * on what is specified.
+     *
+     * @return Builder|EBuilder
+     */
+    public final function newQuery() {
+        $class = $this->getClass();
+        return $this->queryLogic($this->query = $class::query());
+    }
+
+    /**
+     * Returns the active query. Or a new query if none are active.
+     *
+     * @return EBuilder|Builder
+     */
+    public final function query() {
+        return (is_null($this->query))? $this->newQuery(): $this->query;
+    }
+
+    /**
+     * Adds the query logic to the query.
+     *
+     * @param Builder|EBuilder $query
+     * @return EBuilder|Builder
+     */
+    protected function queryLogic($query) {
+        return $query;
+    }
+
+    /**
      * Attempts to retrieve the Ticket by the given ticket ID.
      *
      * @param int $id the id of the ticket
-     * @return Model an instance of the Repository class.
+     * @return Ethereal an instance of the Repository class.
      * @throws \Exception of specified type if it is not found.
      */
     public final function retrieveByID($id) {
-        $class = $this->getClass();
         try {
-            return $class::findOrFail($id);
+            if (is_null($val = $this->query()->find($id))) throw new Exception();
+            else return $val;
         } catch(\Exception $e) {
-            $this->throwException("$class id: $id not found");
+            $this->throwException($this->getClass() . " id: $id not found");
         }
+    }
+
+    /**
+     * Gets all of the results associated with the class.
+     *
+     * @return array|Collection|static[]
+     */
+    public final function all() {
+        return $this->query()->get();
     }
 
     /**

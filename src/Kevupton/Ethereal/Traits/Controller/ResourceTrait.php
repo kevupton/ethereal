@@ -1,8 +1,11 @@
 <?php namespace Kevupton\Ethereal\Traits\Controller;
 
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Http\Request;
 use Kevupton\Ethereal\Models\Ethereal;
+use Kevupton\Ethereal\Repositories\Repository;
 
 trait ResourceTrait {
 
@@ -19,7 +22,7 @@ trait ResourceTrait {
         'not_found' => [404, 'Error :val not found in :class data.']
     );
     private $error_messages = array();
-
+    private $_instantiated_class = null;
 
     /**
      * Gets the current objects class
@@ -27,6 +30,52 @@ trait ResourceTrait {
      * @return string the Ethereal class name
      */
     abstract function getClass();
+
+    /**
+     * Attempts to instantiates a new class, otherwise returns false.
+     *
+     * @return bool|Ethereal|Repository
+     */
+    private function newClass() {
+        $class = $this->getClass();
+        try {
+            return ($this->_instantiated_class = new $class());
+        } catch(Exception $e) {
+            return false;
+        }
+    }
+
+    /**
+     * Checks to see if the given class is a repository
+     *
+     * @return bool
+     */
+    private function isRepository() {
+        return ($this->getInstantiated() instanceof Repository);
+    }
+
+    /**
+     * Instantiates the new class if null else returns an already instantiated class.
+     *
+     * @return Ethereal|Repository
+     */
+    private function getInstantiated() {
+        return (is_null($this->_instantiated_class))? $this->newClass(): $this->_instantiated_class;
+    }
+
+    /**
+     * Gets the appropriate query for the given data type.
+     *
+     * @return Builder|QBuilder
+     */
+    protected function getQuery() {
+        if ($this->getInstantiated() !== false) {
+            return $this->getInstantiated()->query();
+        } else {
+            $class = $this->getClass();
+            return $class::query();
+        }
+    }
 
     /**
      * Validate that the id is not null. If there is a getId method then run that.
