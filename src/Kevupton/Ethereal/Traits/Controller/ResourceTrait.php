@@ -2,6 +2,7 @@
 
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Http\Request;
 use Kevupton\Ethereal\Models\Ethereal;
@@ -192,15 +193,17 @@ trait ResourceTrait {
      * @param Request $request
      */
     protected function indexMain(Request $request) {
-
-        $class = $this->getClass();
-        $query = $class::query();
+        $query = $this->getQuery();
 
         if ($this->paginate) {
             $this->paginate($request, $query);
         }
 
         $results = $this->indexLogic($request, $query);
+
+        if ($results instanceof Collection) {
+            $results = $results->all();
+        }
 
         $name = ($results instanceof Ethereal || is_null($results))? 'class': 'results';
 
@@ -217,7 +220,7 @@ trait ResourceTrait {
      * @return mixed
      */
     protected function indexLogic(Request $request, $query) {
-        return $query->get()->all();
+        return $query->get();
     }
 
     /**

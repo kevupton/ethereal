@@ -2,7 +2,6 @@
 
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Builder as EBuilder;
 use Kevupton\Ethereal\Models\Ethereal;
@@ -40,23 +39,13 @@ abstract class Repository {
     }
 
     /**
-     * Returns a new query instance from either Eloquent or the DB depending
-     * on what is specified.
-     *
-     * @return Builder|EBuilder
-     */
-    public final function newQuery() {
-        $class = $this->getClass();
-        return $this->queryLogic($this->query = $class::query());
-    }
-
-    /**
      * Returns the active query. Or a new query if none are active.
      *
      * @return EBuilder|Builder
      */
     public final function query() {
-        return (is_null($this->query))? $this->newQuery(): $this->query;
+        $class = $this->getClass();
+        return $this->queryLogic($this->query = $class::query());
     }
 
     /**
