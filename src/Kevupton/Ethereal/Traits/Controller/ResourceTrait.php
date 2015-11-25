@@ -79,6 +79,15 @@ trait ResourceTrait {
     }
 
     /**
+     * Gets the main class associated with either repository or Ethereal
+     * @return string
+     */
+    private function getMainClass() {
+        if ($this->isRepository()) return $this->getInstantiated()->getClass();
+        else return $this->getClass();
+    }
+
+    /**
      * Validate that the id is not null. If there is a getId method then run that.
      *
      * @param Request $request
@@ -240,7 +249,7 @@ trait ResourceTrait {
      * @param Request $request
      */
     protected function createMain(Request $request) {
-        $class = $this->getClass();
+        $class = $this->getMainClass();
 
         /** @var Ethereal $object */
         $object = new $class();
@@ -272,7 +281,7 @@ trait ResourceTrait {
      * @param Request $request
      */
     protected function storeMain(Request $request) {
-        $class = $this->getClass();
+        $class = $this->getMainClass();
 
         /** @var Ethereal $object */
         $object = new $class();
@@ -306,7 +315,7 @@ trait ResourceTrait {
      * @param Request $request
      */
     protected function showMain(Request $request, $id) {
-        $class = $this->getClass();
+        $class = $this->getMainClass();
 
         /** @var Ethereal $object */
         $object = $class::find($id);
@@ -342,7 +351,7 @@ trait ResourceTrait {
      * @param $id
      */
     protected function editMain(Request $request, $id) {
-        $class = $this->getClass();
+        $class = $this->getMainClass();
 
         /** @var Ethereal $object */
         $object = $class::find($id);
@@ -381,7 +390,7 @@ trait ResourceTrait {
      * @param $id
      */
     protected function updateMain(Request $request, $id) {
-        $class = $this->getClass();
+        $class = $this->getMainClass();
 
         /** @var Ethereal $object */
         $object = $class::find($id);
@@ -421,7 +430,7 @@ trait ResourceTrait {
      * @throws \Exception
      */
     protected function deleteMain(Request $request, $id) {
-        $class = $this->getClass();
+        $class = $this->getMainClass();
 
         /** @var Ethereal $object */
         $object = $class::find($id);
