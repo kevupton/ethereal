@@ -1,10 +1,13 @@
 <?php namespace Kevupton\Ethereal\Repositories;
 
+use App\Http\Controllers\Controller;
 use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Builder as EBuilder;
+use Illuminate\Http\Request;
 use Kevupton\Ethereal\Models\Ethereal;
+use Kevupton\Ethereal\Utils\Json;
 
 abstract class Repository {
     private $cached;
@@ -193,5 +196,28 @@ abstract class Repository {
         if ($model->errors()->count() > 0) {
             $this->throwException(implode($joiner, $model->errors()->all()), $exception_type);
         }
+    }
+
+
+    /**
+     * Handler for the resource trait to run ethereal repositories.
+     *
+     * @param Json $json
+     * @param string $method the action to run on the repository
+     * @param Request $request the http request
+     * @param array $data any additional data associated with the request
+     * @return bool true if the method was called, else false.
+     */
+    public function resourceLoad(Json $json, $method, Request $request, $data = []) {
+
+        $callable = '_' . strtolower($method);
+
+        if (method_exists($this, $callable)) {
+            call_user_func([$this, $callable],[$json, $request, $data]);
+            return true;
+        }
+
+        return false;
+
     }
 }

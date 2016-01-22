@@ -106,7 +106,7 @@ trait ResourceTrait {
      *
      * @param Request $request the request data
      * @param string $type the type of request it is
-     * @param callable $callable the calling function to do in between.
+     * @param array $data the data loaded from the request.
      * @return string
      */
     private function execute(Request $request, $type, array $data = array()) {
@@ -116,7 +116,12 @@ trait ResourceTrait {
             if (method_exists($this, "before$type")) $this->{"before$type"}($request);
             if ($this->isSuccess()) {
                 $callable = $type . 'Main';
-                call_user_func_array([$this, $callable], array_merge([$request], $data));
+
+                $class = $this->getInstantiated();
+                if (!$this->isRepository() || !$class->resourceLoad($this->json(), $type, $request, $data)) {
+                    call_user_func_array([$this, $callable], array_merge([$request], $data));
+                }
+
                 if ($this->isSuccess() &&
                     method_exists($this, "after$type")) $this->{"after$type"}($request);
             }
@@ -214,9 +219,12 @@ trait ResourceTrait {
             $results = $results->all();
         }
 
-        $name = ($results instanceof Ethereal || is_null($results))? 'class': 'results';
-
-        $this->json()->addData($name, $results, true);
+        if ($results instanceof Ethereal) {
+            $this->json()->addData('class', $results, true);
+        } else {
+            $this->json()->addData('results', $results, true);
+            $this->json()->addData('count', count($results), true);
+        }
 
     }
 
@@ -315,10 +323,10 @@ trait ResourceTrait {
      * @param Request $request
      */
     protected function showMain(Request $request, $id) {
-        $class = $this->getMainClass();
+        $query = $this->getQuery();
 
         /** @var Ethereal $object */
-        $object = $class::find($id);
+        $object = $query->where('id', $id)->first();
 
         if (is_null($object)) {
             $this->json()->addError($this->getErrorMessage('not_found', [
@@ -351,10 +359,10 @@ trait ResourceTrait {
      * @param $id
      */
     protected function editMain(Request $request, $id) {
-        $class = $this->getMainClass();
+        $query = $this->getQuery();
 
         /** @var Ethereal $object */
-        $object = $class::find($id);
+        $object = $query->where('id', $id)->first();
 
         if (is_null($object)) { //if the object was not found then add an error
             $this->json()->addError($this->getErrorMessage('not_found', [
@@ -390,10 +398,10 @@ trait ResourceTrait {
      * @param $id
      */
     protected function updateMain(Request $request, $id) {
-        $class = $this->getMainClass();
+        $query = $this->getQuery();
 
         /** @var Ethereal $object */
-        $object = $class::find($id);
+        $object = $query->where('id', $id)->first();
 
         if (is_null($object)) { //if the object was not found then add an error
             $this->json()->addError($this->getErrorMessage('not_found', [
@@ -406,6 +414,8 @@ trait ResourceTrait {
 
             if ($object->hasErrors()) { //if the edit function failed
                 $this->json()->addError($object->errors()->all());
+            } else {
+                $this->json()->addData('class', $object->getAttributes());
             }
         }
     }
@@ -416,9 +426,9 @@ trait ResourceTrait {
      * @return string
      * @throws \ErrorException
      */
-    public function delete(Request $request, $id = null) {
+    public function destroy(Request $request, $id = null) {
         $this->validateId($request, $id);
-        return $this->execute($request,'delete', [$id]);
+        return $this->execute($request,'destroy', [$id]);
     }
 
     /**
@@ -429,11 +439,11 @@ trait ResourceTrait {
      * @param $id
      * @throws \Exception
      */
-    protected function deleteMain(Request $request, $id) {
-        $class = $this->getMainClass();
+    protected function destroyMain(Request $request, $id) {
+        $query = $this->getQuery();
 
         /** @var Ethereal $object */
-        $object = $class::find($id);
+        $object = $query->where('id', $id)->first();
 
         if (is_null($object)) { //if the object was not found then add an error
             $this->json()->addError($this->getErrorMessage('not_found', [
@@ -441,7 +451,6 @@ trait ResourceTrait {
                 'val' => $id
             ]));
         } else {
-            $object->fill($request->all());
             $object->delete();
 
             if ($object->hasErrors()) { //if the edit function failed

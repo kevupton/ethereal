@@ -193,12 +193,15 @@ class Ethereal extends Model {
             if (method_exists($this, 'beforeSave')? ($this->beforeSave() === false)?: true: true) {
                 $x = parent::save($array);
             }
-            if (method_exists($this, 'afterSave')) {
-                $this->afterSave();
+            if (!$this->hasErrors()) {
+                if (method_exists($this, 'afterSave')) {
+                    $this->afterSave();
+                }
+                if ($before_create && method_exists($this, 'afterCreate')) {
+                    $this->afterCreate();
+                }
             }
-            if ($before_create && method_exists($this, 'afterCreate')) {
-                $this->afterCreate();
-            }
+
         }
         return $x;
     }
