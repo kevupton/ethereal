@@ -262,4 +262,13 @@ class Ethereal extends Model {
 
         return new HasManyThroughCustom((new $related)->newQuery(), $this, $through, $firstKey, $secondKey, $localKey, $pivotKey);
     }
+
+    /**
+     * Returns the models primary key
+     *
+     * @return string
+     */
+    public function getPrimaryKey() {
+        return $this->primaryKey;
+    }
 }

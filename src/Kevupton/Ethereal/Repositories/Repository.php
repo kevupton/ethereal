@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Builder as EBuilder;
 use Illuminate\Http\Request;
 use Kevupton\Ethereal\Models\Ethereal;
 use Kevupton\Ethereal\Utils\Json;
+use ReflectionClass;
 
 abstract class Repository {
     private $cached;
@@ -70,10 +71,9 @@ abstract class Repository {
      */
     public final function retrieveByID($id) {
         try {
-            if (is_null($val = $this->query()->find($id))) throw new Exception();
-            else return $val;
+            return $this->query()->findOrFail($id);
         } catch(\Exception $e) {
-            $this->throwException($this->getClass() . " id: $id not found");
+            $this->throwException($this->getClass() . " id: $id not found.");
         }
     }
 
@@ -219,5 +219,69 @@ abstract class Repository {
 
         return false;
 
+    }
+
+    /**
+     * Creates or Updates data in the database.
+     *
+     * @param array $data the data to update
+     * @param string $by the id of the column to base the update off
+     * @return Ethereal
+     */
+    public function createOrUpdate(array $data, $by = null) {
+        $result = null;
+        $class = $this->getClass();
+
+        /** @var Ethereal $class */
+        $class = new $class;
+
+        //if the column is not set then go by the primary key
+        if (is_null($by)) $by = $class->getPrimaryKey();
+
+        if (isset($data[$by])) {
+
+            /** @var Ethereal $result */
+            $result = $this->query()->where($by, $data[$by])->first();
+
+            if (!is_null($result)) {
+                $result->fill($data);
+            } else {
+                $result = $class->fill($data);
+            }
+
+            //attempt to save the changes
+            $result->save();
+
+            if ($result->hasErrors()) { //if there are errors then throw them.
+                $this->throwErrors($result);
+            }
+
+        } else {
+            $this->throwException($by . ' field is missing');
+        }
+
+        return $result;
+    }
+
+
+    /**
+     * Removes the class
+     *
+     * @param mixed $id the id to delete
+     * @return bool|null
+     * @throws Exception
+     */
+    public function removeByID($id) {
+        return $this->retrieveByID($id)->delete();
+    }
+
+    /**
+     * Returns an instantiated instance of the class
+     * @param array $params
+     * @return Ethereal
+     */
+    public function newClass(array $params = []) {
+        $class = new ReflectionClass($this->getClass());
+        return $class->newInstanceArgs($params);
     }
 }
