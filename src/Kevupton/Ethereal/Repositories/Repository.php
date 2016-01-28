@@ -284,4 +284,18 @@ abstract class Repository {
         $class = new ReflectionClass($this->getClass());
         return $class->newInstanceArgs($params);
     }
+
+    /**
+     * Creates a new class with the given data and returns it.
+     *
+     * @param array $data
+     * @return Ethereal
+     */
+    public function create(array $data) {
+        $class = $this->newClass([$data]);
+        $class->save();
+        $this->throwErrors($class);
+        return $class;
+    }
+
 }

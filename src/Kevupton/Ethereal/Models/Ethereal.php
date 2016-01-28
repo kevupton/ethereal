@@ -271,4 +271,13 @@ class Ethereal extends Model {
     public function getPrimaryKey() {
         return $this->primaryKey;
     }
+
+    /**
+     * Gets the value of the primary key.
+     *
+     * @return mixed|null
+     */
+    public function getPrimaryKeyValue() {
+        return $this->{$this->getPrimaryKey()};
+    }
 }
