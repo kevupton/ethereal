@@ -6,7 +6,7 @@ Extends the core laravel framework, providing easier, faster development experie
 
 Check out the wiki to view examples and full documentation.
 
-[Wiki](wiki)
+[Wiki](https://github.com/kevupton/ethereal/wiki)
 
 ----------
 
@@ -52,7 +52,7 @@ Just extend the `Kevupton\Ethereal\Models\Ethereal` class instead of Laravel Mod
 
 Check out the wiki for the complete documentation on how to use. 
 
-[Wiki](wiki)
+[Wiki](https://github.com/kevupton/ethereal/wiki)
 
 ------------
 
