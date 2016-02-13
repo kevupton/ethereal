@@ -48,9 +48,9 @@ Just extend the `Kevupton\Ethereal\Models\Ethereal` class instead of Laravel Mod
     class Example extends Ethereal { }
 ```
 
-Check out the wiki for the complete documentation on how to use. 
-
 ------------
+
+Check out the wiki for the complete documentation on how to use. 
 
 [Wiki](wiki)
 
