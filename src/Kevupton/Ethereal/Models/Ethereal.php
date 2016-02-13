@@ -15,6 +15,7 @@ class Ethereal extends Model {
     const BELONGS_TO_MANY = "belongsToMany";
     const BELONGS_TO = "belongsTo";
     const MORPH_TO_MANY = "morphToMany";
+    const MORPH_BY_MANY = "morphByMany";
     const MORPH_TO = "morphTo";
     const MORPH_ONE = "morphOne";
     const MORPH_MANY = "morphMany";
@@ -22,7 +23,7 @@ class Ethereal extends Model {
     const HAS_MANY_THROUGH_CUSTOM = 'hasManyThroughCustom';
 
     public static $loaded_columns = array();
-    public $timestamps = false;
+
     public $autoHydrateEntityFromInput = true;
     // purge redundant form data
     public $autoPurgeRedundantAttributes = true;
