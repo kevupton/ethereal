@@ -1,0 +1,3 @@
+
+var ApiGen = ApiGen || {};
+ApiGen.elements = [["f","current_datetime()"],["c","Kevupton\\Ethereal\\Exceptions\\Exception"],["c","Kevupton\\Ethereal\\Models\\Ethereal"],["c","Kevupton\\Ethereal\\Models\\MorphModel"],["c","Kevupton\\Ethereal\\Providers\\EtherealServiceProvider"],["c","Kevupton\\Ethereal\\Relations\\HasManyThroughCustom"],["c","Kevupton\\Ethereal\\Repositories\\Repository"],["c","Kevupton\\Ethereal\\Tests\\TestSuite"],["c","Kevupton\\Ethereal\\Traits\\Controller\\JsonTrait"],["c","Kevupton\\Ethereal\\Traits\\Controller\\ResourceTrait"],["c","Kevupton\\Ethereal\\Utils\\Json"],["c","Kevupton\\Ethereal\\Validation\\CustomValidator"],["f","lumen_resource()"],["f","mysql_datetime_format()"]];
