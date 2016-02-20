@@ -39,7 +39,7 @@ class Exception extends \Exception {
      * @param $name
      * @return mixed|null
      */
-    private function _get($name) {
+    protected function _get($name) {
         if ($this->_has($name)) {
             return $this->data[$name];
         } else return null;
@@ -51,7 +51,7 @@ class Exception extends \Exception {
      * @param $name
      * @return bool
      */
-    private function _has($name) {
+    protected function _has($name) {
         return isset($this->data[$name]);
     }
 }
