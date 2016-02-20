@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Controller;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Builder as EBuilder;
 use Illuminate\Http\Request;
@@ -11,7 +12,19 @@ use Kevupton\Ethereal\Utils\Json;
 use ReflectionClass;
 
 abstract class Repository {
-    private $cached;
+    /**
+     * All of the class cached variables
+     *
+     * @var array
+     */
+    private $cached = [];
+
+    /**
+     * Exceptions for the class to use
+     * go in here
+     *
+     * @var array
+     */
     protected $exceptions = [];
 
     /** @var Builder|EBuilder */
@@ -23,6 +36,17 @@ abstract class Repository {
      * @return string the string instance of the defining class
      */
     abstract function getClass();
+
+
+    /**
+     * Loads a default class for the repository
+     *
+     * Repository constructor.
+     * @param null $id
+     */
+    public function __construct($id = null) {
+        $this->load($id);
+    }
 
     /**
      * Retrieves the which exception class to use.
@@ -132,23 +156,22 @@ abstract class Repository {
     /**
      * Gets or sets a cached value
      *
-     * @param $key
-     * @param null $val
-     * @param bool $clear
-     * @return null
+     * @param string $key the key to search
+     * @param null|mixed $val either the default value or the value to store
+     * @param bool $write whether or not to write or retrieve
+     * @return null|mixed
      */
-    protected function cache($key, $val = null, $clear = false) {
-        if (isset($this->cached[$key]) && !$clear) {
+    protected function cache($key, $val = null, $write = false) {
+        if (isset($this->cached[$key]) && !$write) { //if it as a read method
             return $this->cached[$key];
-        } else {
-            if (!is_null($val)) {
-                if (is_callable($val)) {
-                    $this->cached[$key] = $val();
-                } else $this->cached[$key] = $val;
-                return $this->cached[$key];
-            }
+        } else if ($write) { //if write
+            if (is_callable($val)) {
+                $this->cached[$key] = $val();
+            } else $this->cached[$key] = $val;
+            return $this->cached[$key];
+        } else { //is read and doesn't exist
+            return $val;
         }
-        return null;
     }
 
     /**
@@ -176,7 +199,7 @@ abstract class Repository {
         } elseif (is_numeric($id)) {
             $val = $this->retrieveByID($id);
         }
-        return $this->cache(strtolower($this->getClassShortName()), $val, true);
+        return $this->cache($this->getClassSnakeName(), $val, true);
     }
 
     /**
@@ -186,6 +209,25 @@ abstract class Repository {
      */
     public function getClassShortName() {
         return last(explode("\\",$this->getClass()));
+    }
+
+    /**
+     * Returns the name of the class in snake case.
+     *
+     * @return string
+     */
+    public function getClassSnakeName() {
+        return snake_case($this->getClassShortName());
+    }
+
+    /**
+     * Gets the cached class if it exists
+     *
+     * @param mixed|null $default the default value to return
+     * @return Model|Ethereal|null
+     */
+    public function getCachedClass($default = null) {
+        return $this->cache($this->getClassSnakeName(), $default);
     }
 
     /**
