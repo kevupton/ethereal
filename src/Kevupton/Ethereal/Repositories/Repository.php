@@ -1,11 +1,11 @@
 <?php namespace Kevupton\Ethereal\Repositories;
 
 use App\Http\Controllers\Controller;
-use Exception;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Builder as EBuilder;
 use Illuminate\Http\Request;
+use Kevupton\Ethereal\Exceptions\Exception;
 use Kevupton\Ethereal\Models\Ethereal;
 use Kevupton\Ethereal\Utils\Json;
 use ReflectionClass;
@@ -91,10 +91,13 @@ abstract class Repository {
      *
      * @param string $message the message of the exception
      * @param string $exception the exception category to throw ex. main
+     * @param array $data any additional data to be attached to the exception
+     * @param int $code (default exception param)
+     * @param null $prev_exception (default exception param)
      */
-    public function throwException($message = '', $exception = 'main') {
+    public function throwException($message = '', $exception = 'main', array $data = array(), $code = 0, $prev_exception = null) {
         $class = $this->getException($exception);
-        throw new $class($message);
+        throw new $class($message, $code, $prev_exception, $data);
     }
 
     /**
@@ -191,10 +194,17 @@ abstract class Repository {
      * @param Ethereal $model
      * @param string $joiner
      * @param string $exception_type
+     * @param string $message
      */
-    public function throwErrors(Ethereal $model, $joiner = "\n", $exception_type = "main") {
+    public function throwErrors(Ethereal $model, $joiner = "\n", $exception_type = "main", $message = "") {
         if ($model->errors()->count() > 0) {
-            $this->throwException(implode($joiner, $model->errors()->all()), $exception_type);
+            $this->throwException(
+                !empty($message)?$message: 'Validation Errors: ' . implode($joiner, $model->errors()->all()),
+                $exception_type,
+                array(
+                    'model' => $model
+                )
+            );
         }
     }
 
