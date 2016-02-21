@@ -396,16 +396,21 @@ abstract class Repository {
     }
 
     /**
-     * Creates a new class with the given data and returns it.
+     * Creates a new class with the given data and returns it, also
+     * caching it.
      *
      * @param array $data
      * @return Ethereal
      */
-    public function create($data) {
+    public function create($data, $load = true) {
         if (!is_array($data)) $this->throwException('data is not an array');
+
         $class = $this->newClass([$data]);
         $class->save();
         $this->throwErrors($class);
+
+        if ($load) $this->load($class); //loads into the cache
+
         return $class;
     }
 
