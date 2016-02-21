@@ -323,7 +323,8 @@ abstract class Repository {
      * @return Model|Ethereal|null
      */
     public function getCachedClass($default = null) {
-        return $this->cache($this->getClassSnakeName());
+        $result = $this->retrieve($default);
+        return is_null($result)? $this->cache($this->getClassSnakeName()): $result;
     }
 
     /**
