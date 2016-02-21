@@ -149,7 +149,7 @@ abstract class Repository {
         if (isset($this->$key)) {
             return $this->$key;
         } else {
-            return $this->cache($key, $val);
+            return $this->cache([$key => $val]);
         }
     }
 
@@ -157,21 +157,75 @@ abstract class Repository {
      * Gets or sets a cached value
      *
      * @param string $key the key to search
-     * @param null|mixed $val either the default value or the value to store
-     * @param bool $write whether or not to write or retrieve
-     * @return null|mixed
+     * @param null $default
+     * @param bool $literal
+     * @return mixed|null
      */
-    protected function cache($key, $val = null, $write = false) {
-        if (isset($this->cached[$key]) && !$write) { //if it as a read method
-            return $this->cached[$key];
-        } else if ($write) { //if write
-            if (is_callable($val)) {
-                $this->cached[$key] = $val();
-            } else $this->cached[$key] = $val;
-            return $this->cached[$key];
-        } else { //is read and doesn't exist
-            return $val;
+    protected function cache($key, $default = null, $literal = false) {
+        if (is_array($key)) { //if write
+            $written = array();
+            foreach ($key as $k => $v) {
+                $to_write = $v;
+                if (is_callable($v)) {
+                    $to_write = $v();
+                }
+
+                if (!$literal) $this->define_in_iterate_cache($k, $to_write);
+                else $this->cached[$k] = $to_write;
+
+                $written[] = $to_write;
+            }
+
+            return (count($written) == 1)? $written[0]: $written;
+        } else {
+            $found = $literal? $this->cached[$key]: $this->iterate_cache($key);
+
+            if (isset($found) && !is_array($key)) { //if it as a read method
+                return $found;
+            } else { //is read and doesn't exist
+                return $default;
+            }
         }
+    }
+
+    private function iterate_cache($key) {
+        $list = explode('.', $key);
+        $result = $this->cached;
+        foreach ($list as $sub_key) {
+            if (isset($result[$sub_key])) {
+                $result = $result[$sub_key];
+            } else return null;
+        }
+
+        return $result;
+    }
+
+    private function define_in_iterate_cache($key, $value) {
+        $list = explode('.', $key);
+        $result = &$this->cached;
+
+        $count = count($list);
+        for ($i = 0; $i < $count; $i++) {
+            if ($i == $count - 1) {
+                $result[$list[$i]] = $value;
+            } else {
+                if (isset($result[$list[$i]])) {
+                    $_a = &$result[$list[$i]];
+                    if (is_array($_a)) {
+                        //do nothing
+                    } else {
+                        $this->throwException('Error accessing iterated cached property');
+                    }
+                } else {
+                    if ($i < $count - 1) { //create new array
+                        $result[$list[$i]] = array();
+                    }
+                }
+                $result = &$result[$list[$i]];
+            }
+        }
+
+        return $value;
     }
 
     /**
@@ -199,7 +253,7 @@ abstract class Repository {
         } elseif (is_numeric($id)) {
             $val = $this->retrieveByID($id);
         }
-        return $this->cache($this->getClassSnakeName(), $val, true);
+        return $this->cache([$this->getClassSnakeName() => $val]);
     }
 
     /**
