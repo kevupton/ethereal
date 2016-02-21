@@ -217,7 +217,7 @@ abstract class Repository {
                     } else {
                         $this->throwException('Error accessing iterated cached property');
                     }
-                    
+
                 } else {
                     if ($i < $count - 1) { //create new array
                         $result[$list[$i]] = array();
@@ -293,6 +293,7 @@ abstract class Repository {
      * @param string $joiner
      * @param string $exception_type
      * @param string $message
+     * @return Ethereal
      */
     public function throwErrors(Ethereal $model, $joiner = "\n", $exception_type = "main", $message = "") {
         if ($model->errors()->count() > 0) {
@@ -304,6 +305,7 @@ abstract class Repository {
                 )
             );
         }
+        return $model;
     }
 
 
