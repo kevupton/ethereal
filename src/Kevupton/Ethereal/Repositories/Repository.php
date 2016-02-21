@@ -87,6 +87,51 @@ abstract class Repository {
     }
 
     /**
+     * Retrieves the class by a given value or set of values
+     *
+     * @param int|array|Ethereal $id
+     * @return null|Ethereal|Model
+     */
+    public function retrieve($id) {
+
+        if (is_null($id)) return null;
+
+        elseif (is_a($id, $this->getClass())) {
+            return $id;
+        } elseif (is_array($id)) {
+            return $this->retrieveWhere($id);
+        } else {
+            return $this->retrieveByID($id);
+        }
+    }
+
+    /**
+     * Gets an array of values based around the given input data criteria
+     *
+     * @param array $data
+     * @param bool $and
+     * @return array|Collection|static[]
+     */
+    public function retrieveWhere(array $data = array(), $and = true) {
+        $method = $and? 'where': 'orWhere';
+
+        $query = $this->query();
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                if (count($value) == 3) {
+                    $query->$method($value[0], $value[1], $value[2]);
+                } else {
+                    $query->$method($value[0], $value[1]);
+                }
+            } else {
+                $query->$method($key, $value);
+            }
+        }
+
+        return $query->get();
+    }
+
+    /**
      * Attempts to retrieve the Ticket by the given ticket ID.
      *
      * @param int $id the id of the ticket
@@ -244,18 +289,13 @@ abstract class Repository {
     /**
      * Loads the element into the dom
      *
-     * @param $id
-     * @return null
+     * @param mixed $id
+     * @return null|Ethereal|Model
      */
     public function load($id) {
-        $val = null;
-        if (is_null($id)) return null;
-        elseif (is_a($id, $this->getClass())) {
-            $val = $id;
-        } elseif (is_numeric($id)) {
-            $val = $this->retrieveByID($id);
-        }
-        return $this->cache([$this->getClassSnakeName() => $val]);
+        return $this->cache([
+            $this->getClassSnakeName() => $this->retrieve($id)
+        ]);
     }
 
     /**
@@ -283,7 +323,7 @@ abstract class Repository {
      * @return Model|Ethereal|null
      */
     public function getCachedClass($default = null) {
-        return $this->cache($this->getClassSnakeName(), $default);
+        return $this->cache($this->getClassSnakeName());
     }
 
     /**
