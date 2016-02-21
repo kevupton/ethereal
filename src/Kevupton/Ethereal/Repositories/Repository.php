@@ -401,7 +401,8 @@ abstract class Repository {
      * @param array $data
      * @return Ethereal
      */
-    public function create(array $data) {
+    public function create($data) {
+        if (!is_array($data)) $this->throwException('data is not an array');
         $class = $this->newClass([$data]);
         $class->save();
         $this->throwErrors($class);
