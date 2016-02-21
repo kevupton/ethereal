@@ -400,6 +400,7 @@ abstract class Repository {
      * caching it.
      *
      * @param array $data
+     * @param bool $load whether or not to load it into the cache
      * @return Ethereal
      */
     public function create($data, $load = true) {
@@ -411,7 +412,7 @@ abstract class Repository {
 
         if ($load) $this->load($class); //loads into the cache
 
-        return $class;
+        return $load? $this->load($class): $class;
     }
 
 }
