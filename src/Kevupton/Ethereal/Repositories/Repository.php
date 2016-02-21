@@ -210,12 +210,14 @@ abstract class Repository {
                 $result[$list[$i]] = $value;
             } else {
                 if (isset($result[$list[$i]])) {
+
                     $_a = &$result[$list[$i]];
                     if (is_array($_a)) {
                         //do nothing
                     } else {
                         $this->throwException('Error accessing iterated cached property');
                     }
+                    
                 } else {
                     if ($i < $count - 1) { //create new array
                         $result[$list[$i]] = array();
