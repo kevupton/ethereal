@@ -258,6 +258,7 @@ trait ResourceTrait {
      * @param Request $request
      */
     protected function createMain(Request $request) {
+        $object = null;
         try {
             /** @var Ethereal $object */
             $object = $this->getInstantiated()->create($request->all());
@@ -266,7 +267,7 @@ trait ResourceTrait {
             $errors = $e->getValidationErrors();
         }
         if ($errors->count()) {
-            $this->json()->addError($object->errors()->all());
+            $this->json()->addError($errors->all());
         } else {
             $this->json()->addData('class', $object->getAttributes());
         }
@@ -289,6 +290,7 @@ trait ResourceTrait {
      * @param Request $request
      */
     protected function storeMain(Request $request) {
+        $object = null;
         try {
             /** @var Ethereal $object */
             $object = $this->getInstantiated()->create($request->all());
@@ -297,7 +299,7 @@ trait ResourceTrait {
             $errors = $e->getValidationErrors();
         }
         if ($errors->count()) {
-            $this->json()->addError($object->errors()->all());
+            $this->json()->addError($errors->all());
         } else {
             $this->json()->addData('class', $object->getAttributes());
         }
