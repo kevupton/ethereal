@@ -94,7 +94,7 @@ class Ethereal extends Model {
         $this->autoPurgeRedundantAttributes = false;
     }
 
-    public function beforeValidate() {
+    protected function beforeValidate() {
         if (in_array('user_id', $this->tableColumns)) {
             if (Auth::check()) {
                 if (is_null($this->user_id)) $this->user_id = Auth::user()->id;

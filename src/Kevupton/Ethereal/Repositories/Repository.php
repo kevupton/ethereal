@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Eloquent\Builder as EBuilder;
 use Illuminate\Http\Request;
-use Kevupton\Ethereal\Exceptions\Exception;
+use Kevupton\Ethereal\Exceptions\EtherealException;
 use Kevupton\Ethereal\Models\Ethereal;
 use Kevupton\Ethereal\Utils\Json;
 use ReflectionClass;
@@ -59,7 +59,7 @@ abstract class Repository {
             return $this->exceptions[$exception];
         } else {
             if ($exception == 'main') {
-                return Exception::class;
+                return EtherealException::class;
             } else {
                 return $this->getException();
             }

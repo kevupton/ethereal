@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Http\Request;
+use Kevupton\Ethereal\Exceptions\EtherealException;
 use Kevupton\Ethereal\Models\Ethereal;
 use Kevupton\Ethereal\Repositories\Repository;
 
@@ -257,15 +258,14 @@ trait ResourceTrait {
      * @param Request $request
      */
     protected function createMain(Request $request) {
-        $class = $this->getMainClass();
-
-        /** @var Ethereal $object */
-        $object = new $class();
-        $object->fill($request->all());
-
-        $object->save();
-
-        if ($object->hasErrors()) {
+        try {
+            /** @var Ethereal $object */
+            $object = $this->getInstantiated()->create($request->all());
+            $errors = $object->errors();
+        } catch(EtherealException $e) {
+            $errors = $e->getValidationErrors();
+        }
+        if ($errors->count()) {
             $this->json()->addError($object->errors()->all());
         } else {
             $this->json()->addData('class', $object->getAttributes());
@@ -289,15 +289,14 @@ trait ResourceTrait {
      * @param Request $request
      */
     protected function storeMain(Request $request) {
-        $class = $this->getMainClass();
-
-        /** @var Ethereal $object */
-        $object = new $class();
-        $object->fill($request->all());
-
-        $object->save();
-
-        if ($object->hasErrors()) {
+        try {
+            /** @var Ethereal $object */
+            $object = $this->getInstantiated()->create($request->all());
+            $errors = $object->errors();
+        } catch(EtherealException $e) {
+            $errors = $e->getValidationErrors();
+        }
+        if ($errors->count()) {
             $this->json()->addError($object->errors()->all());
         } else {
             $this->json()->addData('class', $object->getAttributes());
@@ -323,10 +322,12 @@ trait ResourceTrait {
      * @param Request $request
      */
     protected function showMain(Request $request, $id) {
-        $query = $this->getQuery();
+        $class = $this->getMainClass();
+        /** @var Ethereal $object */
+        $object = new $class();
 
         /** @var Ethereal $object */
-        $object = $query->where('id', $id)->first();
+        $object = $this->getQuery()->where($object->getPrimaryKey(), $id)->first();
 
         if (is_null($object)) {
             $this->json()->addError($this->getErrorMessage('not_found', [
@@ -359,10 +360,12 @@ trait ResourceTrait {
      * @param $id
      */
     protected function editMain(Request $request, $id) {
-        $query = $this->getQuery();
+        $class = $this->getMainClass();
+        /** @var Ethereal $object */
+        $object = new $class();
 
         /** @var Ethereal $object */
-        $object = $query->where('id', $id)->first();
+        $object = $this->getQuery()->where($object->getPrimaryKey(), $id)->first();
 
         if (is_null($object)) { //if the object was not found then add an error
             $this->json()->addError($this->getErrorMessage('not_found', [
@@ -398,10 +401,12 @@ trait ResourceTrait {
      * @param $id
      */
     protected function updateMain(Request $request, $id) {
-        $query = $this->getQuery();
+        $class = $this->getMainClass();
+        /** @var Ethereal $object */
+        $object = new $class();
 
         /** @var Ethereal $object */
-        $object = $query->where('id', $id)->first();
+        $object = $this->getQuery()->where($object->getPrimaryKey(), $id)->first();
 
         if (is_null($object)) { //if the object was not found then add an error
             $this->json()->addError($this->getErrorMessage('not_found', [
@@ -440,10 +445,12 @@ trait ResourceTrait {
      * @throws \Exception
      */
     protected function destroyMain(Request $request, $id) {
-        $query = $this->getQuery();
+        $class = $this->getMainClass();
+        /** @var Ethereal $object */
+        $object = new $class();
 
         /** @var Ethereal $object */
-        $object = $query->where('id', $id)->first();
+        $object = $this->getQuery()->where($object->getPrimaryKey(), $id)->first();
 
         if (is_null($object)) { //if the object was not found then add an error
             $this->json()->addError($this->getErrorMessage('not_found', [

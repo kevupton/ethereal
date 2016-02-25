@@ -1,10 +1,11 @@
 <?php namespace Kevupton\Ethereal\Exceptions;
 
+use Exception;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\MessageBag;
 use Kevupton\Ethereal\Models\Ethereal;
 
-class Exception extends \Exception {
+class EtherealException extends Exception {
     private $data = array();
 
     public function __construct($message = "", $code = 0, Exception $previous = null, array $data = array())
