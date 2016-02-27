@@ -381,7 +381,7 @@ trait ResourceTrait {
             if ($object->hasErrors()) { //if the edit function failed
                 $this->json()->addError($object->errors()->all());
             } else {
-                $this->json()->addData('class', $object->jsonSerialize();
+                $this->json()->addData('class', $object->jsonSerialize());
             }
         }
     }
