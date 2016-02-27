@@ -337,7 +337,7 @@ trait ResourceTrait {
                 'val' => $id
             ]));
         } else {
-            $this->json()->addData('class', $object->jsonSerialize();
+            $this->json()->addData('class', $object->jsonSerialize());
         }
     }
 
