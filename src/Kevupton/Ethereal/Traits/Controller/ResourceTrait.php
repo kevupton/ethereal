@@ -269,7 +269,7 @@ trait ResourceTrait {
         if ($errors->count()) {
             $this->json()->addError($errors->all());
         } else {
-            $this->json()->addData('class', $object->getAttributes());
+            $this->json()->addData('class', $object->jsonSerialize());
         }
     }
 
@@ -301,7 +301,7 @@ trait ResourceTrait {
         if ($errors->count()) {
             $this->json()->addError($errors->all());
         } else {
-            $this->json()->addData('class', $object->getAttributes());
+            $this->json()->addData('class', $object->jsonSerialize());
         }
     }
 
@@ -337,7 +337,7 @@ trait ResourceTrait {
                 'val' => $id
             ]));
         } else {
-            $this->json()->addData('class', $object->getAttributes());
+            $this->json()->addData('class', $object->jsonSerialize();
         }
     }
 
@@ -380,6 +380,8 @@ trait ResourceTrait {
 
             if ($object->hasErrors()) { //if the edit function failed
                 $this->json()->addError($object->errors()->all());
+            } else {
+                $this->json()->addData('class', $object->jsonSerialize();
             }
         }
     }
@@ -422,7 +424,7 @@ trait ResourceTrait {
             if ($object->hasErrors()) { //if the edit function failed
                 $this->json()->addError($object->errors()->all());
             } else {
-                $this->json()->addData('class', $object->getAttributes());
+                $this->json()->addData('class', $object->jsonSerialize());
             }
         }
     }
