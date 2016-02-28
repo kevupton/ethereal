@@ -266,7 +266,7 @@ trait ResourceTrait {
         } catch(EtherealException $e) {
             $errors = $e->getValidationErrors();
         }
-        if ($errors->count()) {
+        if (!is_null($errors) && $errors->count()) {
             $this->json()->addError($errors->all());
         } else {
             $this->json()->addData('class', $object->jsonSerialize());
@@ -298,7 +298,7 @@ trait ResourceTrait {
         } catch(EtherealException $e) {
             $errors = $e->getValidationErrors();
         }
-        if ($errors->count()) {
+        if (!is_null($errors) && $errors->count()) {
             $this->json()->addError($errors->all());
         } else {
             $this->json()->addData('class', $object->jsonSerialize());
