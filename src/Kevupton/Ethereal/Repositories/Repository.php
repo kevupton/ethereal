@@ -203,20 +203,26 @@ abstract class Repository {
      *
      * @param string $key the key to search
      * @param null $default
-     * @param bool $literal
+     * @param bool $literal the literal value to get (including '.' in the name)
+     * @param bool $write_default whether to write the default in the case the default value is used
+     * @param bool $run_once whether or not to run the method one, if the value is a function.
      * @return mixed|null
      */
-    protected function cache($key, $default = null, $literal = false) {
+    protected function cache($key, $default = null, $literal = false, $write_default = false, $run_once = false) {
         if (is_array($key)) { //if write
             $written = array();
-            foreach ($key as $k => $v) {
-                $to_write = $v;
-                if (is_callable($v)) {
-                    $to_write = $v();
+            foreach ($key as $k => $to_write) {
+
+                if (is_callable($to_write) && $run_once) {
+                    $to_write = $to_write();
                 }
 
                 if (!$literal) $this->define_in_iterate_cache($k, $to_write);
                 else $this->cached[$k] = $to_write;
+
+                if (is_callable($to_write)) {
+                    $to_write = $to_write();
+                }
 
                 $written[] = $to_write;
             }
@@ -226,8 +232,25 @@ abstract class Repository {
             $found = $literal? $this->cached[$key]: $this->iterate_cache($key);
 
             if (isset($found) && !is_array($key)) { //if it as a read method
+
+                if (is_callable($found)) {  //get the function value.
+                    $found = $found();
+                }
+
                 return $found;
             } else { //is read and doesn't exist
+                if ($write_default) { //check to see if to write the default value.
+                    if (is_callable($default) && $run_once) { //if the default value is a function and should only run once
+                        $default = $default();
+                    }
+
+                    $this->cached[$key] = $default;
+                }
+
+                if (is_callable($default)) { //if is a function then get the value.
+                    $default = $default();
+                }
+
                 return $default;
             }
         }
