@@ -4,6 +4,7 @@ class Json {
     private $data = array();
     private $errors = array();
     private $token = null;
+    private $status = 200;
 
     public function addError($key, $val = null) {
         if (is_array($key)) {

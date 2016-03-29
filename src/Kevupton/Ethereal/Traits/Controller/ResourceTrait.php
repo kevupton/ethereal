@@ -15,6 +15,7 @@ trait ResourceTrait {
 
     protected $from_key = 'from';
     protected $take_key = 'take';
+    protected $page_key = 'page';
     protected $take_default = 10;
     protected $from_default = 0;
     protected $paginate = true;
@@ -128,7 +129,7 @@ trait ResourceTrait {
             }
         }
 
-        return $this->json()->out();
+        return response()->json($this->json()->toArray(),200);
     }
 
     /**
@@ -141,10 +142,12 @@ trait ResourceTrait {
     protected function paginate(Request $request, $query) {
         $from = $request->get($this->from_key);
         $take = $request->get($this->take_key);
+        $page = (int) $request->get($this->page_key, 1);
 
-        if (!is_null($from) || !is_null($take)) {
-            $from = ($from)?: $this->from_default;
+        if (!is_null($from) || !is_null($take) || !is_null($page)) {
             $take = ($take)?: $this->take_default;
+            $from = ($from)?: $this->from_default;
+            $from += $take * ($page - 1);
 
             $query->take($take)->skip($from);
         }
