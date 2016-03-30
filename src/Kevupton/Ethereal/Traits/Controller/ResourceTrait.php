@@ -129,7 +129,7 @@ trait ResourceTrait {
             }
         }
 
-        return response()->json($this->json()->toArray(),200);
+        return response()->json($this->json()->toArray(),$this->json()->getStatusCode());
     }
 
     /**
