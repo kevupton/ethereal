@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Http\Request;
 use Kevupton\Ethereal\Exceptions\EtherealException;
+use Kevupton\Ethereal\Exceptions\ResourceException;
 use Kevupton\Ethereal\Models\Ethereal;
 use Kevupton\Ethereal\Repositories\Repository;
 
@@ -112,20 +113,30 @@ trait ResourceTrait {
      * @return string
      */
     private function execute(Request $request, $type, array $data = array()) {
-        if (!$this->hasErrors()) {
-            $type = ucfirst(strtolower($type));
+        try {
+            if (!$this->hasErrors()) {
+                $type = ucfirst(strtolower($type));
 
-            if (method_exists($this, "before$type")) $this->{"before$type"}($request);
-            if ($this->isSuccess()) {
-                $callable = $type . 'Main';
+                if (method_exists($this, "before$type")) $this->{"before$type"}($request);
+                if ($this->isSuccess()) {
+                    $callable = $type . 'Main';
 
-                $class = $this->getInstantiated();
-                if (!$this->isRepository() || !$class->resourceLoad($this->json(), $type, $request, $data)) {
-                    call_user_func_array([$this, $callable], array_merge([$request], $data));
+                    $class = $this->getInstantiated();
+                    if (!$this->isRepository() || !$class->resourceLoad($this->json(), $type, $request, $data)) {
+                        call_user_func_array([$this, $callable], array_merge([$request], $data));
+                    }
+
+                    if ($this->isSuccess() &&
+                        method_exists($this, "after$type")) $this->{"after$type"}($request);
                 }
+            }
+        } catch(ResourceException $e) {
+            $this->json()->addError($e->getMessage());
+        } catch(EtherealException $e) {
+            $errors = $e->getValidationErrors();
 
-                if ($this->isSuccess() &&
-                    method_exists($this, "after$type")) $this->{"after$type"}($request);
+            if (is_null($errors)) {
+                $this->json()->addError($e->getMessage());
             }
         }
 

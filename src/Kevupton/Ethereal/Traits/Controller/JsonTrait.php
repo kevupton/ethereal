@@ -1,8 +1,5 @@
 <?php namespace Kevupton\Ethereal\Traits\Controller;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
-use Kevupton\Ethereal\Models\Ethereal;
 use Kevupton\Ethereal\Utils\Json;
 
 trait JsonTrait {
