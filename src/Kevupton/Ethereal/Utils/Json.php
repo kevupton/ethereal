@@ -103,7 +103,8 @@ class Json {
         $data =  [
             'data' => $this->data,
             'errors' => $this->errors,
-            'success' => $this->isSuccess()
+            'success' => $this->isSuccess(),
+            'status_code' => $this->status_code
         ];
         if (!is_null($this->token)) $data['token'] = $this->token;
 
