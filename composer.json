@@ -13,6 +13,9 @@
     "require": {
       "php": ">=5.3"
     },
+    "require-dev": {
+        "laravel/lumen-framework": "5.3.*"
+    },
     "autoload": {
         "psr-4": {
             "Kevupton\\Ethereal\\": "src/Kevupton/Ethereal/"

@@ -34,6 +34,8 @@ class Ethereal extends Model {
 
     protected $validator = CustomValidator::class;
 
+    private $callingMethod = '';
+
     public function validate(array $rules = array(), array $customMessages = array()) {
         $return = true;
         if (method_exists($this, 'beforeValidate')) {
@@ -134,6 +136,7 @@ class Ethereal extends Model {
     }
 
     public function __call($method, $parameters) {
+        $this->callingMethod = $method;
         $d = $this->getRelational($method);
         if ($d !== false) {
             return $d;
@@ -148,9 +151,7 @@ class Ethereal extends Model {
     public function morphTo($name = null, $type = null, $id = null) {
         if (is_null($name))
         {
-            $backtrace = debug_backtrace(false, 4);
-            $caller = $backtrace[3];
-            $name = snake_case($caller['function']);
+            $name = $this->callingMethod;
         }
         return parent::morphTo($name, $type, $id);
     }
@@ -158,9 +159,7 @@ class Ethereal extends Model {
     public function belongsTo($string = null, $foreign_key = null, $other_key = null, $relation = null) {
         if (is_null($relation))
         {
-            $backtrace = debug_backtrace(false, 5);
-            $caller = $backtrace[4];
-            $relation = snake_case($caller['function']);
+            $relation = $this->callingMethod;
         }
         return parent::belongsTo($string, $foreign_key, $other_key, $relation);
     }
