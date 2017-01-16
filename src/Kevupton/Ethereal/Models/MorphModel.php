@@ -102,7 +102,7 @@ class MorphModel extends Ethereal {
         $name = $this->morphModel;
         $rules = $name::$rules;
         unset($rules[$this->morphBy . '_id'], $rules[$this->morphBy . '_type']);
-        return $this->makeValidator($data, $rules);
+        return \Validator::make($data, $rules);
     }
 
     public function delete() {
