@@ -8,6 +8,7 @@ use Kevupton\Ethereal\Relations\HasManyThroughCustom;
 use Kevupton\Ethereal\Validation\CustomValidator;
 use Symfony\Component\Debug\Exception\NullMorphException;
 use \Auth;
+use \Validator;
 
 class Ethereal extends Model {
     const HAS_MANY = "hasMany";
@@ -47,7 +48,7 @@ class Ethereal extends Model {
             return false;
         } else {
             if (isset($class::$rules)) {
-                $validate = $this->makeValidator($this->attributes, $class::$rules);
+                $validate = Validator::make($this->attributes, $class::$rules);
                 foreach ($validate->errors()->getMessages() as $key => $msgs) {
                     $return = false;
                     foreach ($msgs as $msg) {
@@ -57,19 +58,6 @@ class Ethereal extends Model {
             }
             return $return;
         }
-    }
-
-    public function makeValidator($data, $rules) {
-        $validator = $this->validator;
-
-        $validate = new $validator(app('translator'), $data, $rules);
-        $presence = app('validation.presence');
-
-        if (isset($presence)) {
-            $validate->setPresenceVerifier($presence);
-        }
-
-        return $validate;
     }
 
     public function errors() {
