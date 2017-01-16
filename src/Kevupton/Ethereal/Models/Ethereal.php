@@ -5,7 +5,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\MessageBag;
 use Kevupton\Ethereal\Relations\HasManyThroughCustom;
-use Kevupton\Ethereal\Validation\CustomValidator;
 use Symfony\Component\Debug\Exception\NullMorphException;
 use \Auth;
 use \Validator;
