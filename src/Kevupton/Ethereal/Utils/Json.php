@@ -126,7 +126,7 @@ class Json {
      * @return bool
      */
     public function isSuccess() {
-        return count($this->errors) == 0;
+        return count($this->errors) == 0  && $this->status_code == 200;
     }
 
     /**
