@@ -1,7 +1,7 @@
 <?php namespace Kevupton\Ethereal\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Kevupton\Ethereal\Utils\JsonResponse;
+use Kevupton\LaravelJsonResponse\Providers\LaravelJsonResponseProvider;
 
 class EtherealServiceProvider extends ServiceProvider {
 
@@ -12,9 +12,7 @@ class EtherealServiceProvider extends ServiceProvider {
      */
     public function boot()
     {
-        $this->app->singleton('eth.json', function () {
-            return new JsonResponse();
-        });
+        $this->app->register(LaravelJsonResponseProvider::class);
     }
 
     /**

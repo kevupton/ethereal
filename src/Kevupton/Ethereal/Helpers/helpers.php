@@ -24,15 +24,3 @@ if (!function_exists('mysql_datetime_format')) {
         return 'Y-m-d H:i:s';
     }
 }
-
-if (!function_exists('json_response')) {
-    /**
-     * Gets the apps JsonResponse
-     *
-     * @return \Kevupton\Ethereal\Utils\JsonResponse
-     */
-    function json_response ()
-    {
-        return app('eth.json');
-    }
-}

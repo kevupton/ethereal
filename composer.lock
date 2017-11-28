@@ -4,9 +4,59 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "04da82133503df7e80461df6f9ca5391",
-    "content-hash": "7b2e20220d25ed2c95d476f2e0ffaec9",
-    "packages": [],
+    "hash": "0f68347f9bfd3a442e0bcad7f7ded6b6",
+    "content-hash": "6e1b4acbe16a624a11c735c410468ddc",
+    "packages": [
+        {
+            "name": "kevupton/laravel-json-response",
+            "version": "v0.0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/kevupton/laravel-json-response.git",
+                "reference": "f2708143227cb93b225a5624ff6616adf2824b12"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/kevupton/laravel-json-response/zipball/f2708143227cb93b225a5624ff6616adf2824b12",
+                "reference": "f2708143227cb93b225a5624ff6616adf2824b12",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "barryvdh/laravel-ide-helper": "^2.4",
+                "laravel/laravel": "5.5.*",
+                "laravel/lumen-framework": "5.5.*"
+            },
+            "type": "extension",
+            "autoload": {
+                "psr-4": {
+                    "Kevupton\\LaravelJsonResponse\\": "src/Kevupton/LaravelJsonResponse/"
+                },
+                "files": [
+                    "src/Kevupton/LaravelJsonResponse/Helpers/helpers.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kevin Upton",
+                    "email": "uptonkg@gmail.com"
+                }
+            ],
+            "description": "Easy Json responses for laravel",
+            "keywords": [
+                "eloquent",
+                "json",
+                "laravel"
+            ],
+            "time": "2017-11-28 14:57:09"
+        }
+    ],
     "packages-dev": [
         {
             "name": "barryvdh/laravel-ide-helper",

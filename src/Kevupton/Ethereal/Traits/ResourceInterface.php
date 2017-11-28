@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Query\Builder as QBuilder;
 use Illuminate\Http\Request;
-use Kevupton\Ethereal\Exceptions\EtherealException;
 use Kevupton\Ethereal\Exceptions\ResourceException;
 use Kevupton\Ethereal\Models\Ethereal;
 use Kevupton\Ethereal\Repositories\Repository;
