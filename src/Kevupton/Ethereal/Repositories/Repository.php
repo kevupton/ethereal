@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Builder as EBuilder;
 use Illuminate\Http\Request;
 use Kevupton\Ethereal\Exceptions\EtherealException;
 use Kevupton\Ethereal\Models\Ethereal;
-use Kevupton\Ethereal\Utils\Json;
+use Kevupton\Ethereal\Utils\JsonResponse;
 use ReflectionClass;
 
 abstract class Repository {
@@ -376,13 +376,13 @@ abstract class Repository {
     /**
      * Handler for the resource trait to run ethereal repositories.
      *
-     * @param Json $json
+     * @param JsonResponse $json
      * @param string $method the action to run on the repository
      * @param Request $request the http request
      * @param array $data any additional data associated with the request
      * @return bool true if the method was called, else false.
      */
-    public function resourceLoad(Json $json, $method, Request $request, $data = []) {
+    public function resourceLoad(JsonResponse $json, $method, Request $request, $data = []) {
 
         $callable = '_' . strtolower($method);
 

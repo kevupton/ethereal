@@ -1,6 +1,7 @@
 <?php namespace Kevupton\Ethereal\Models;
 
-class MorphModel extends Ethereal {
+class MorphModel extends Ethereal
+{
     public $autoPurgeRedundantAttributes = false;
     // hydrates on new entries validation
 
@@ -13,19 +14,21 @@ class MorphModel extends Ethereal {
     protected $morphTable;
     protected $morphModel;
 
-    public function __construct(array $attributes = array()) {
+    public function __construct(array $attributes = array())
+    {
         $class = get_class($this);
-        $this->morph_name = snake_case(last(explode("\\",$this->morphModel)));
+        $this->morph_name = snake_case(last(explode("\\", $this->morphModel)));
         $vars = get_class_vars($this->morphModel);
         if (isset($vars['timestamps']) && $vars['timestamps']) {
             $this->touches[] = $this->morph_name;
         }
-        $class::$relationsData[$this->morph_name] = array(self::MORPH_ONE, $this->morphModel, $this->morphBy);
+        static::$relationsData[$this->morph_name] = array(self::MORPH_ONE, $this->morphModel, $this->morphBy);
         $this->morphColumns = $this->getColumns($this->morphTable);
         parent::__construct($attributes);
     }
 
-    public function __get($key) {
+    public function __get($key)
+    {
         $x = parent::__get($key);
         if ($x == null) {
             $l = parent::__get($this->morph_name);
@@ -36,7 +39,8 @@ class MorphModel extends Ethereal {
         return $x;
     }
 
-    public function __set($key, $value) {
+    public function __set($key, $value)
+    {
         $is_morph_column = in_array($key, $this->morphColumns);
         $is_table_column = in_array($key, $this->tableColumns);
         $set = false;
@@ -48,12 +52,16 @@ class MorphModel extends Ethereal {
                 $l->$key = $value;
                 $set = true;
             }
-        } else if ($is_table_column) {
-            parent::__set($key, $value);
-            $set = true;
-        } else if ($is_morph_column) {
-            $this->inputs[$key] = $value;
-            $set = true;
+        } else {
+            if ($is_table_column) {
+                parent::__set($key, $value);
+                $set = true;
+            } else {
+                if ($is_morph_column) {
+                    $this->inputs[$key] = $value;
+                    $set = true;
+                }
+            }
         }
         if (!$set) {
             parent::__set($key, $value);
@@ -61,7 +69,8 @@ class MorphModel extends Ethereal {
         return $value;
     }
 
-    public function afterSave() {
+    public function afterSave()
+    {
         $name = $this->morph_name;
         $l = $this->$name;
         if ($l != null) {
@@ -72,11 +81,12 @@ class MorphModel extends Ethereal {
         }
     }
 
-    public function validate(array $rules = array(), array $customMessages = array()) {
+    public function validate(array $rules = array(), array $customMessages = array())
+    {
         $return = parent::validate($rules, $customMessages);
         $name = $this->morph_name;
         $l = $this->$name;
-        $data = ($l != null)? $l->getAttributes(): $this->inputs;
+        $data = ($l != null) ? $l->getAttributes() : $this->inputs;
         $validate = $this->validateData($data);
         foreach ($validate->errors()->getMessages() as $key => $msgs) {
             foreach ($msgs as $msg) {
@@ -86,7 +96,16 @@ class MorphModel extends Ethereal {
         return $validate->passes() && $return;
     }
 
-    public function fill(array $attributes) {
+    private function validateData($data)
+    {
+        $name = $this->morphModel;
+        $rules = $name::$rules;
+        unset($rules[$this->morphBy . '_id'], $rules[$this->morphBy . '_type']);
+        return \Validator::make($data, $rules);
+    }
+
+    public function fill(array $attributes)
+    {
         $return = parent::fill($attributes);
         $name = $this->morph_name;
         $l = $this->$name;
@@ -98,14 +117,8 @@ class MorphModel extends Ethereal {
         return $return;
     }
 
-    private function validateData($data) {
-        $name = $this->morphModel;
-        $rules = $name::$rules;
-        unset($rules[$this->morphBy . '_id'], $rules[$this->morphBy . '_type']);
-        return \Validator::make($data, $rules);
-    }
-
-    public function delete() {
+    public function delete()
+    {
         $name = $this->morph_name;
         $l = $this->$name;
         if ($l != null) {

@@ -3,11 +3,9 @@
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\MessageBag;
 use Kevupton\Ethereal\Relations\HasManyThroughCustom;
 use Symfony\Component\Debug\Exception\NullMorphException;
 use \Auth;
-use \Validator;
 
 class Ethereal extends Model {
     const HAS_MANY = "hasMany";
@@ -29,43 +27,12 @@ class Ethereal extends Model {
     public $autoPurgeRedundantAttributes = true;
     // hydrates on new entries validation
     protected $tableColumns = array();
-    protected $validationErrors;
     protected static $unguarded = false;
-
-    protected $validator = CustomValidator::class;
 
     private $callingMethod = '';
 
-    public function validate(array $rules = array(), array $customMessages = array()) {
-        $return = true;
-        if (method_exists($this, 'beforeValidate')) {
-            $return = $this->beforeValidate();
-        }
-        $class = get_class($this);
-
-        if (!$return) {
-            return false;
-        } else {
-            if (isset($class::$rules)) {
-                $validate = Validator::make($this->attributes, $class::$rules);
-                foreach ($validate->errors()->getMessages() as $key => $msgs) {
-                    $return = false;
-                    foreach ($msgs as $msg) {
-                        $this->validationErrors->add($key, $msg);
-                    }
-                }
-            }
-            return $return;
-        }
-    }
-
-    public function errors() {
-        return $this->validationErrors;
-    }
-
     public function __construct(array $attributes = array()) {
         $this->tableColumns = $this->getColumns();
-        $this->validationErrors = new MessageBag;
         parent::__construct($attributes);
     }
 
@@ -81,15 +48,6 @@ class Ethereal extends Model {
     public function disableHydration() {
         $this->autoHydrateEntityFromInput = false;
         $this->autoPurgeRedundantAttributes = false;
-    }
-
-    protected function beforeValidate() {
-        if (in_array('user_id', $this->tableColumns)) {
-            if (Auth::check()) {
-                if (is_null($this->user_id)) $this->user_id = Auth::user()->id;
-            }
-        }
-        return true;
     }
 
     public function __get($key) {
@@ -131,10 +89,6 @@ class Ethereal extends Model {
         return parent::__call($method, $parameters);
     }
 
-    public function hasErrors() {
-        return $this->validationErrors->count() > 0;
-    }
-
     public function morphTo($name = null, $type = null, $id = null) {
         if (is_null($name))
         {
@@ -169,63 +123,6 @@ class Ethereal extends Model {
         return null;
     }
 
-    public function save(array $array = array()) {
-        $x = false;
-        if ($this->validate()) {
-            $before_create = false;
-            if (!$this->exists && method_exists($this, 'beforeCreate')) {
-                $this->beforeCreate();
-                $before_create = true;
-            }
-            if (method_exists($this, 'beforeSave')? ($this->beforeSave() === false)?: true: true) {
-                $x = parent::save($array);
-            }
-            if (!$this->hasErrors()) {
-                if (method_exists($this, 'afterSave')) {
-                    $this->afterSave();
-                }
-                if ($before_create && method_exists($this, 'afterCreate')) {
-                    $this->afterCreate();
-                }
-            }
-
-        }
-        return $x;
-    }
-
-    public static function asSelectArray($id, $value = null, Builder $query = null, $group_by = true) {
-        $array = array();
-        foreach (self::developArrayResults($id, $value, $query, $group_by) as $c) {
-            if ( !is_null($value)) $array[$c->$id] = $c->$value;
-            else $array[$c->$id] = $c->$id;
-        }
-        return $array;
-    }
-
-    public static function asJqueryArray($id, $value = null, Builder $query = null, $group_by = true) {
-        $array = array();
-        foreach (self::developArrayResults($id, $value, $query, $group_by) as $c) {
-            $array[] = ['label' => (is_null($value))? $c->$id: $c->$value, 'value' => $c->$id];
-        }
-        return $array;
-    }
-
-    private static function developArrayResults($id, $value = null, Builder $query = null, $group_by = true)
-    {
-        $class = get_called_class();
-        $attr = array($id);
-        if (!is_null($value)) $attr[] = $value;
-        $query = ($query) ?: $class::query();
-        if ($group_by) {
-            if (is_string($group_by)) {
-                $query = $query->groupby($group_by);
-            } else {
-                $query = $query->groupby($id);
-            }
-        }
-        return $query->get($attr);
-    }
-
     /**
      * Define a has-many-through relationship.
      *
@@ -248,23 +145,5 @@ class Ethereal extends Model {
         $localKey = $localKey ?: $this->getKeyName();
 
         return new HasManyThroughCustom((new $related)->newQuery(), $this, $through, $firstKey, $secondKey, $localKey, $pivotKey);
-    }
-
-    /**
-     * Returns the models primary key
-     *
-     * @return string
-     */
-    public function getPrimaryKey() {
-        return $this->primaryKey;
-    }
-
-    /**
-     * Gets the value of the primary key.
-     *
-     * @return mixed|null
-     */
-    public function getPrimaryKeyValue() {
-        return $this->{$this->getPrimaryKey()};
     }
 }
