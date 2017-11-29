@@ -20,6 +20,12 @@ trait HasAutoHydration
 
     public $autoHydrateModel = true;
 
+    /**
+     * Event handler to auto hydrate all of the request inputs on the
+     * model.
+     *
+     * @param Model $model
+     */
     public static function hydrationCreatingEventHandler (Model $model)
     {
         if (!$model->autoHydrateModel) {

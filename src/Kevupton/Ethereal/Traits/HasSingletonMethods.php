@@ -29,7 +29,7 @@ trait HasSingletonMethods
 
         }
 
-        return is_callable(['parent', '__get']) ? parent::__get($name) : null;;
+        return is_callable(['parent', '__get']) ? parent::__get($name) : null;
     }
 
     /**

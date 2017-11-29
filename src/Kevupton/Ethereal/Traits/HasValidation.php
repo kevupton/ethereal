@@ -82,6 +82,16 @@ trait HasValidation
     }
 
     /**
+     * Registers the validating event
+     *
+     * @param $callback
+     */
+    public static function validating ($callback)
+    {
+        static::registerModelEvent('validating', $callback);
+    }
+
+    /**
      * Validates the model attributes against the set rules.
      *
      * @param array|null $rules

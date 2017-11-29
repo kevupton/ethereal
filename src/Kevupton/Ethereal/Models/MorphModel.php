@@ -1,129 +1,169 @@
 <?php namespace Kevupton\Ethereal\Models;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
+
 class MorphModel extends Ethereal
 {
-    public $autoPurgeRedundantAttributes = false;
-    // hydrates on new entries validation
+    /** @var string the class associated with the morphing */
+    protected $morphClass;
 
-    protected $inputs = array();
-    protected $morphColumns = array();
-    protected $morph_name;
-
-    //To be set by the host
+    /** @var string The name of the morph foreign key */
     protected $morphBy;
-    protected $morphTable;
-    protected $morphModel;
+    /** @var string The explicit type of the morph foreign key */
+    protected $morphType;
+    /** @var string The explicit id of the morph foreign key */
+    protected $morphId;
+    /** @var string the name to bind the morphing to */
+    protected $relationshipName;
 
-    public function __construct(array $attributes = array())
+
+    public function __construct (array $attributes = array())
     {
-        $class = get_class($this);
-        $this->morph_name = snake_case(last(explode("\\", $this->morphModel)));
-        $vars = get_class_vars($this->morphModel);
-        if (isset($vars['timestamps']) && $vars['timestamps']) {
-            $this->touches[] = $this->morph_name;
-        }
-        static::$relationsData[$this->morph_name] = array(self::MORPH_ONE, $this->morphModel, $this->morphBy);
-        $this->morphColumns = $this->getColumns($this->morphTable);
+        $this->touches[] = $this->getRelationshipName();
+        $this->relationships[$this->getRelationshipName()] = array(self::MORPH_ONE, $this->morphClass, $this->morphBy, $this->morphType, $this->morphId);
         parent::__construct($attributes);
     }
 
-    public function __get($key)
+    /**
+     * Gets the Morph name which is what the relationship will be called
+     * @return string
+     */
+    public function getRelationshipName ()
     {
-        $x = parent::__get($key);
-        if ($x == null) {
-            $l = parent::__get($this->morph_name);
-            if ($l != null) {
-                $x = $l->$key;
-            }
-        }
-        return $x;
+        return $this->relationshipName ?: ($this->relationshipName = camel_case(last(explode("\\", $this->morphClass))));
     }
 
-    public function __set($key, $value)
+    /**
+     * On delete we also want to delete the morphed model
+     *
+     * @param MorphModel $model
+     */
+    public static function deletedEventHandle (MorphModel $model)
     {
-        $is_morph_column = in_array($key, $this->morphColumns);
-        $is_table_column = in_array($key, $this->tableColumns);
-        $set = false;
-        $name = $this->morph_name;
-        $l = $this->$name;
-        if ($l != null) {
-            $x = $l->$key;
-            if ($x != null || $is_morph_column) {
-                $l->$key = $value;
-                $set = true;
-            }
-        } else {
-            if ($is_table_column) {
-                parent::__set($key, $value);
-                $set = true;
-            } else {
-                if ($is_morph_column) {
-                    $this->inputs[$key] = $value;
-                    $set = true;
-                }
-            }
+        if ($morphModel = $model->getMorphModel()) {
+            $morphModel->delete();
         }
-        if (!$set) {
+    }
+
+    /**
+     * @return Model|null
+     */
+    public function getMorphModel ()
+    {
+        return $this->{$this->getRelationshipName()};
+    }
+
+    /**
+     * Getter to return the morphed model with priority
+     * over the parent model
+     *
+     * @param $key
+     * @return mixed|null
+     */
+    public function __get ($key)
+    {
+        $morphModel = $this->getOrCreateMorphModel();
+
+        if ($result = $morphModel->$key) {
+            return $result;
+        }
+
+        return parent::__get($key);
+    }
+
+    /**
+     * Setter to also trigger the setter for the morph model
+     * only if there is a fillable attribute
+     *
+     * @param string $key
+     * @param mixed $value
+     */
+    public function __set ($key, $value)
+    {
+        $morphModel = $this->getOrCreateMorphModel();
+
+        if (in_array($key, $morphModel->fillable)) {
+            $morphModel->$key = $value;
+        } else {
             parent::__set($key, $value);
         }
-        return $value;
     }
 
-    public function afterSave()
+    /**
+     * We need to assign the key to the model on create
+     *
+     * @param MorphModel $model
+     */
+    public function createdEventHandler (MorphModel $model)
     {
-        $name = $this->morph_name;
-        $l = $this->$name;
-        if ($l != null) {
-            $l->save();
-        } else {
-            $name = $this->morph_name;
-            $test = $this->$name()->create($this->inputs);
+        $relation = $this->getMorphRelation();
+
+        $type = $relation->getMorphType();
+        $id = $relation->getForeignKeyName();
+
+        $morphedModel = $this->getOrCreateMorphModel();
+
+        $morphedModel->$type = get_class($model);
+        $morphedModel->$id = $model->getKey();
+    }
+
+    /**
+     * @return MorphOne
+     */
+    public function getMorphRelation ()
+    {
+        return $this->{$this->getRelationshipName()}();
+    }
+
+    /**
+     * @return Model|null
+     */
+    public function getOrCreateMorphModel ()
+    {
+        if ($morphModel = $this->getMorphModel()) {
+            return $morphModel;
+        }
+
+        $this->relations[$this->getRelationshipName()] = $morphModel = new ($this->morphClass)();
+    }
+
+    /**
+     * Once saved we want to also call save on the morphed model
+     */
+    public function savedEventHandler ()
+    {
+        $this->getOrCreateMorphModel()->save();
+    }
+
+    /**
+     * On validate we want to also validate the child,
+     * only if there is a method for that.
+     *
+     * @param MorphModel $model
+     */
+    public function validatingEventHandler (MorphModel $model)
+    {
+        $morphModel = $model->getMorphModel();
+
+        if ($morphModel->validateModel) {
+            $morphModel->validate();
         }
     }
 
-    public function validate(array $rules = array(), array $customMessages = array())
+    /**
+     * We also want to fill the morphed model with data
+     *
+     * @param array $attributes
+     * @return $this
+     */
+    public function fill (array $attributes)
     {
-        $return = parent::validate($rules, $customMessages);
-        $name = $this->morph_name;
-        $l = $this->$name;
-        $data = ($l != null) ? $l->getAttributes() : $this->inputs;
-        $validate = $this->validateData($data);
-        foreach ($validate->errors()->getMessages() as $key => $msgs) {
-            foreach ($msgs as $msg) {
-                $this->validationErrors->add($key, $msg);
-            }
-        }
-        return $validate->passes() && $return;
-    }
-
-    private function validateData($data)
-    {
-        $name = $this->morphModel;
-        $rules = $name::$rules;
-        unset($rules[$this->morphBy . '_id'], $rules[$this->morphBy . '_type']);
-        return \Validator::make($data, $rules);
-    }
-
-    public function fill(array $attributes)
-    {
+        /** @var MorphModel $return */
         $return = parent::fill($attributes);
-        $name = $this->morph_name;
-        $l = $this->$name;
-        if ($l != null) {
-            $l->fill($attributes);
-        } else {
-            $this->inputs = array_merge($this->inputs, $attributes);
-        }
-        return $return;
-    }
 
-    public function delete()
-    {
-        $name = $this->morph_name;
-        $l = $this->$name;
-        if ($l != null) {
-            $l->delete();
-        }
-        parent::delete();
+        $this->getOrCreateMorphModel()->fill($attributes);
+
+        return $return;
     }
 }
