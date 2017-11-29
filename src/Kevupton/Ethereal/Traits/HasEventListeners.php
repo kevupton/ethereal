@@ -8,6 +8,7 @@
 
 namespace Kevupton\Ethereal\Traits;
 
+use Illuminate\Database\Eloquent\Model;
 
 trait HasEventListeners
 {

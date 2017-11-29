@@ -16,8 +16,10 @@ use LogicException;
 
 trait HasDynamicRelationships
 {
-    use HasAttributes;
-    use HasRelationships;
+    use HasAttributes,
+        HasRelationships {
+        getRelationValue as oldGetRelationValue;
+    }
 
     public $relationships = [];
 

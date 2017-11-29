@@ -15,8 +15,6 @@ use Illuminate\Database\Eloquent\Model;
  */
 trait HasAutoHydration
 {
-    use HasEventListeners;
-
     public $autoHydrateModel = true;
 
     /**

@@ -42,7 +42,7 @@ trait HasSingletonMethods
     {
         $method = camel_case($this->methodPrefix . '_' . $name);
 
-        if (array_key_exists($this->methodResults, $name)) {
+        if (array_key_exists($name, $this->methodResults)) {
             return $this->methodResults[$name];
         }
 

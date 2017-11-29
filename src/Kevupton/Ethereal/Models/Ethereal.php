@@ -9,7 +9,6 @@ use Kevupton\Ethereal\Traits\HasQueryHelpers;
 use Kevupton\Ethereal\Traits\HasSingletonMethods;
 use Kevupton\Ethereal\Traits\HasTableColumns;
 use Kevupton\Ethereal\Traits\HasValidation;
-use Symfony\Component\Debug\Exception\NullMorphException;
 
 class Ethereal extends Model implements RelationshipConstants
 {

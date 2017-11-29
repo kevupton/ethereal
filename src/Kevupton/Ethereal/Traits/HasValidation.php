@@ -14,11 +14,6 @@ use Validator;
 
 trait HasValidation
 {
-    use HasEventListeners;
-
-    use HasAttributes,
-        HasEvents;
-
     public $rules = [];
     public $validationMessages = null;
     public $customAttributes = null;
