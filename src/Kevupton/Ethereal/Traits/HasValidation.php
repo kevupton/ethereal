@@ -8,12 +8,13 @@
 
 namespace Kevupton\Ethereal\Traits;
 
-use Illuminate\Database\Eloquent\Concerns\HasAttributes;
-use Illuminate\Database\Eloquent\Concerns\HasEvents;
+use Illuminate\Database\Eloquent\Model;
 use Validator;
 
 trait HasValidation
 {
+    use HasEventListeners;
+
     public $rules = [];
     public $validationMessages = null;
     public $customAttributes = null;
@@ -33,8 +34,10 @@ trait HasValidation
 
         if (array_key_exists('max', $rules)) {
             return $rules['max'][0];
-        } else if (array_key_exists('size', $rules)) {
-            return $rules['size'][0];
+        } else {
+            if (array_key_exists('size', $rules)) {
+                return $rules['size'][0];
+            }
         }
 
         return null;
@@ -65,6 +68,20 @@ trait HasValidation
     }
 
     /**
+     * Event handler for handling on save events
+     *
+     * @param Model $model
+     */
+    public static function validationSavingEventHandler (Model $model)
+    {
+        $validator = $model->validate();
+
+        if ($validator && $validator !== true) {
+            var_dump($validator->passes());
+        }
+    }
+
+    /**
      * Validates the model attributes against the set rules.
      *
      * @param array|null $rules
@@ -83,11 +100,11 @@ trait HasValidation
         }
 
         /** @var \Illuminate\Validation\Validator $validate */
-        return ($this->validator)::make(
+        ($this->validator)::validate(
             $this->attributes,
             $rules ?: $this->rules,
-            $messages ?: $this->validationMessages,
-            $customAttributes ?: $this->customAttributes
+            $messages ?: $this->validationMessages ?: [],
+            $customAttributes ?: $this->customAttributes ?: []
         );
     }
 }

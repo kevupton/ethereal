@@ -17,7 +17,10 @@ class Ethereal extends Model implements RelationshipConstants
         HasQueryHelpers,
         HasDynamicRelationships,
         HasTableColumns,
-        HasAutoHydration;
+        HasAutoHydration {
+        HasAutoHydration::boot insteadof HasValidation;
+        HasAutoHydration::getEventNameFromMethod insteadof HasValidation;
+    }
 
     /**
      * Creates the class from the request

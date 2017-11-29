@@ -7,6 +7,7 @@
  */
 
 namespace Kevupton\Ethereal\Traits;
+
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -15,26 +16,17 @@ use Illuminate\Database\Eloquent\Model;
  */
 trait HasAutoHydration
 {
+    use HasEventListeners;
+
     public $autoHydrateModel = true;
 
-    /**
-     * Registers a boot method which listens for the creating event.
-     */
-    protected static function boot ()
+    public static function hydrationCreatingEventHandler (Model $model)
     {
-        if (is_callable(['parent', 'boot'])) {
-            parent::boot();
+        if (!$model->autoHydrateModel) {
+            return;
         }
 
-        // Register an event so that on create, we fill the model
-        // with all of the request inputs
-        if (is_callable(['static', 'creating'])) {
-            static::creating(function (Model $model) {
-                if (!$model->autoHydrateModel) return;
-
-                $original = $model->getAttributes();
-                $model->fill(array_merge(request()->all(), $original));
-            });
-        }
+        $original = $model->getAttributes();
+        $model->fill(array_merge(request()->all(), $original));
     }
 }
