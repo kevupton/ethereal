@@ -9,7 +9,7 @@
 namespace Kevupton\Ethereal\Traits;
 
 
-trait QueryHelpers
+trait HasQueryHelpers
 {
     public static function arraySelect ($id, $value = null, Builder $query = null, $group_by = true)
     {

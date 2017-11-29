@@ -11,7 +11,7 @@ use Kevupton\Ethereal\Exceptions\ResourceException;
 use Kevupton\Ethereal\Models\Ethereal;
 use Kevupton\Ethereal\Repositories\Repository;
 
-trait ResourceInterface
+trait HasResourceInterface
 {
 
     protected $required_id = true;
