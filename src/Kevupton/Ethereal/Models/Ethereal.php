@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Kevupton\Ethereal\Traits\HasAutoHydration;
 use Kevupton\Ethereal\Traits\HasDynamicRelationships;
 use Kevupton\Ethereal\Traits\HasEventListeners;
-use Kevupton\Ethereal\Traits\HasQueryHelpers;
 use Kevupton\Ethereal\Traits\HasSingletonMethods;
 use Kevupton\Ethereal\Traits\HasTableColumns;
 use Kevupton\Ethereal\Traits\HasValidation;
