@@ -1,5 +1,6 @@
 <?php namespace Kevupton\Ethereal\Repositories;
 
+use FastRoute\Route;
 use Illuminate\Database\Eloquent\Builder as EBuilder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
@@ -279,8 +280,7 @@ abstract class Repository
      */
     public final function query ()
     {
-        $class = $this->getClass();
-        return $this->queryLogic($this->query = $class::query());
+        return $this->queryLogic(($this->getClass())::query());
     }
 
     /**
@@ -308,6 +308,25 @@ abstract class Repository
         } catch (\Exception $e) {
             $this->throwException($this->getClass() . " id: $id not found.");
         }
+    }
+
+    /**
+     * @param null $uri
+     * @return \Illuminate\Routing\Route
+     */
+    public static function show ($uri = null)
+    {
+        return Route::get('', []);
+    }
+
+    /**
+     * @param $uri
+     * @param array $action
+     * @return \Illuminate\Routing\Route
+     */
+    public static function post ($uri, $action = [])
+    {
+        return Route::post('', []);
     }
 
     /**
@@ -361,29 +380,6 @@ abstract class Repository
     {
         $result = $this->retrieve($default);
         return is_null($result) ? $this->cache($this->getClassSnakeName()) : $result;
-    }
-
-    /**
-     * Handler for the resource trait to run ethereal repositories.
-     *
-     * @param JsonResponse $json
-     * @param string $method the action to run on the repository
-     * @param Request $request the http request
-     * @param array $data any additional data associated with the request
-     * @return bool true if the method was called, else false.
-     */
-    public function resourceLoad (JsonResponse $json, $method, Request $request, $data = [])
-    {
-
-        $callable = '_' . strtolower($method);
-
-        if (method_exists($this, $callable)) {
-            call_user_func([$this, $callable], [$json, $request, $data]);
-            return true;
-        }
-
-        return false;
-
     }
 
     /**

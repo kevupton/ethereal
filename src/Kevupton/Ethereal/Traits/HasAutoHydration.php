@@ -8,31 +8,36 @@
 
 namespace Kevupton\Ethereal\Traits;
 
-use Illuminate\Database\Eloquent\Model;
-
 /**
  * Trait HasAutoHydration
  * @package Kevupton\Ethereal\Traits
  */
 trait HasAutoHydration
 {
-    use HasEventListeners;
-
     public $autoHydrateModel = true;
 
     /**
-     * Event handler to auto hydrate all of the request inputs on the
-     * model.
+     * Create a new Eloquent model instance.
      *
-     * @param Model $model
+     * @param  array  $attributes
      */
-    public static function hydrationCreatingEventHandler (Model $model)
+    public function __construct(array $attributes = [])
     {
-        if (!$model->autoHydrateModel) {
-            return;
+        if (is_callable(['parent', '__construct'])) {
+            parent::__construct($attributes);
         }
 
-        $original = $model->getAttributes();
-        $model->fill(array_merge(request()->all(), $original));
+        if ($this->autoHydrateModel) {
+            $this->hydrateModel();
+        }
+    }
+
+    /**
+     * Auto hydrate all of the request inputs on the model.
+     */
+    public function hydrateModel ()
+    {
+        $original = $this->getAttributes();
+        $this->fill(array_merge(request()->all(), $original));
     }
 }

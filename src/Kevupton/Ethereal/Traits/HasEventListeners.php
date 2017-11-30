@@ -26,16 +26,18 @@ trait HasEventListeners
         $methods = get_class_methods(static::class);
 
         foreach ($methods as $method) {
-            if ($event = self::getEventNameFromMethod($method)) {
-
-                // Register an event so that on create, we fill the model
-                // with all of the request inputs
-                if (is_callable(['static', $event])) {
-                    static::$event(function (Model $model) use ($method) {
-                        return $model->$method($model);
-                    });
-                }
+            // get the event name from the method, and then check to see if it is callable
+            // from the current scope.
+            if (!($event = self::getEventNameFromMethod($method)) ||
+                !is_callable(['static', $event])) {
+                continue;
             }
+
+            // Register an event so that on create, we fill the model
+            // with all of the request inputs
+            static::$event(function (Model $model) use ($method) {
+                return $model->$method($model);
+            });
         }
     }
 

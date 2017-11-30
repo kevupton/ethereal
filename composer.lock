@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0f68347f9bfd3a442e0bcad7f7ded6b6",
+    "hash": "1c5c979d7d605af0d5628693f0321806",
     "content-hash": "6e1b4acbe16a624a11c735c410468ddc",
     "packages": [
         {
@@ -582,16 +582,16 @@
         },
         {
             "name": "laravel/framework",
-            "version": "v5.5.21",
+            "version": "v5.5.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/framework.git",
-                "reference": "6321069a75723d88103526903d3192f0b231544a"
+                "reference": "2404af887ca8272d721628a99bbc721ac3b692e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/framework/zipball/6321069a75723d88103526903d3192f0b231544a",
-                "reference": "6321069a75723d88103526903d3192f0b231544a",
+                "url": "https://api.github.com/repos/laravel/framework/zipball/2404af887ca8272d721628a99bbc721ac3b692e7",
+                "reference": "2404af887ca8272d721628a99bbc721ac3b692e7",
                 "shasum": ""
             },
             "require": {
@@ -711,20 +711,20 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2017-11-14 15:08:13"
+            "time": "2017-11-27 15:29:55"
         },
         {
             "name": "laravel/laravel",
-            "version": "v5.5.0",
+            "version": "v5.5.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/laravel.git",
-                "reference": "a6c68c24c9938beef0128c3288502b8fbdf8e93d"
+                "reference": "593963979a6b6a27966aef9723b8ff08fb480b87"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/laravel/zipball/a6c68c24c9938beef0128c3288502b8fbdf8e93d",
-                "reference": "a6c68c24c9938beef0128c3288502b8fbdf8e93d",
+                "url": "https://api.github.com/repos/laravel/laravel/zipball/593963979a6b6a27966aef9723b8ff08fb480b87",
+                "reference": "593963979a6b6a27966aef9723b8ff08fb480b87",
                 "shasum": ""
             },
             "require": {
@@ -736,7 +736,7 @@
             "require-dev": {
                 "filp/whoops": "~2.0",
                 "fzaninotto/faker": "~1.4",
-                "mockery/mockery": "0.9.*",
+                "mockery/mockery": "~1.0",
                 "phpunit/phpunit": "~6.0"
             },
             "type": "project",
@@ -763,7 +763,7 @@
                 "framework",
                 "laravel"
             ],
-            "time": "2017-08-30 09:55:27"
+            "time": "2017-11-21 13:37:48"
         },
         {
             "name": "laravel/lumen-framework",
