@@ -1,8 +1,6 @@
 <?php namespace Kevupton\Ethereal\Models;
 
-use Auth;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
 use Kevupton\Ethereal\Traits\HasAutoHydration;
 use Kevupton\Ethereal\Traits\HasDynamicRelationships;
 use Kevupton\Ethereal\Traits\HasEventListeners;
@@ -23,17 +21,5 @@ class Ethereal extends Model implements RelationshipConstants
         HasEventListeners::getEventNameFromMethod insteadof HasValidation;
         HasEventListeners::boot insteadof HasAutoHydration;
         HasEventListeners::getEventNameFromMethod insteadof HasAutoHydration;
-    }
-
-    /**
-     * Creates the class from the request
-     *
-     * @param Request $request
-     */
-    public static function fromRequest (Request $request)
-    {
-        $class = new static();
-        $class->fill($request->all());
-        $class->save();
     }
 }
