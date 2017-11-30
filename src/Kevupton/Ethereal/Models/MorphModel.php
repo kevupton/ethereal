@@ -101,14 +101,14 @@ class MorphModel extends Ethereal
      *
      * @param MorphModel $model
      */
-    public function createdEventHandler (MorphModel $model)
+    public static function createdEventHandler (MorphModel $model)
     {
-        $relation = $this->getMorphRelation();
+        $relation = $model->getMorphRelation();
 
         $type = $relation->getMorphType();
         $id = $relation->getForeignKeyName();
 
-        $morphedModel = $this->getOrCreateMorphModel();
+        $morphedModel = $model->getOrCreateMorphModel();
 
         $morphedModel->$type = get_class($model);
         $morphedModel->$id = $model->getKey();
@@ -137,10 +137,12 @@ class MorphModel extends Ethereal
     /**
      * Once saved we want to also call save on the morphed model.
      * The child should save first for validation purposes
+     *
+     * @param MorphModel $model
      */
-    public function savedEventHandler ()
+    public static function savedEventHandler (MorphModel $model)
     {
-        $this->getOrCreateMorphModel()->save();
+        $model->getOrCreateMorphModel()->save();
     }
 
     /**
