@@ -16,7 +16,6 @@ class Ethereal extends Model implements RelationshipConstants
     use HasEventListeners,
         HasSingletonMethods,
         HasValidation,
-        HasQueryHelpers,
         HasDynamicRelationships,
         HasTableColumns,
         HasAutoHydration
