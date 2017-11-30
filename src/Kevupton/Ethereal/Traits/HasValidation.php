@@ -95,11 +95,12 @@ trait HasValidation
      * Validates the model attributes against the set rules.
      *
      * @param array|null $rules
+     * @param array|null $attributes
      * @param array|null $messages
      * @param null $customAttributes
      * @return bool
      */
-    public function validate (array $rules = null, array $messages = null, $customAttributes = null)
+    public function validate (array $rules = null, array $attributes = null, array $messages = null, $customAttributes = null)
     {
         if ($this->fireModelEvent('validating') === false) {
             return false;
@@ -111,8 +112,8 @@ trait HasValidation
 
         /** @var \Illuminate\Validation\Validator $validate */
         ($this->validator)::validate(
-            $this->attributes,
-            $rules ?: $this->rules,
+            $attributes ?: $this->attributes ?: [],
+            $rules ?: $this->rules ?: [],
             $messages ?: $this->validationMessages ?: [],
             $customAttributes ?: $this->customAttributes ?: []
         );

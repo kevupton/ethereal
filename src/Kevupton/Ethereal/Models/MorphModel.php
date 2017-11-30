@@ -135,7 +135,8 @@ class MorphModel extends Ethereal
     }
 
     /**
-     * Once saved we want to also call save on the morphed model
+     * Once saved we want to also call save on the morphed model.
+     * The child should save first for validation purposes
      */
     public function savedEventHandler ()
     {
@@ -143,18 +144,28 @@ class MorphModel extends Ethereal
     }
 
     /**
-     * On validate we want to also validate the child,
-     * only if there is a method for that.
+     * Validates the model attributes against the set rules.
      *
-     * @param MorphModel $model
+     * @param array|null $rules
+     * @param array|null $attributes
+     * @param array|null $messages
+     * @param null $customAttributes
+     * @return bool
      */
-    public function validatingEventHandler (MorphModel $model)
+    public function validate (array $rules = null, array $attributes = null, array $messages = null, $customAttributes = null)
     {
-        $morphModel = $model->getMorphModel();
+        $morphModel = $this->getOrCreateMorphModel();
+        $attributes = $attributes ?: array_merge($this->attributes, $morphModel->getAttributes());
 
-        if ($morphModel->validateModel) {
-            $morphModel->validate();
+        if (is_null($rules)) {
+            $rules = $this->rules;
+
+            if ($morphModel->validateModel) {
+                $rules = array_merge($this->rules, $morphModel->rules ?: []);
+            }
         }
+
+        return parent::validate($rules, $attributes, $messages, $customAttributes);
     }
 
     /**
