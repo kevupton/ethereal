@@ -1,4 +1,6 @@
-<?php namespace Kevupton\Ethereal\Tests;
+<?php
+
+namespace Kevupton\Ethereal\Tests;
 
 abstract class TestSuite {
 

@@ -11,10 +11,13 @@
         }
     ],
     "require": {
-      "php": ">=5.3"
+      "php": ">=5.3",
+        "kevupton/laravel-json-response": "^0.0.3"
     },
     "require-dev": {
-        "laravel/lumen-framework": "5.3.*"
+        "laravel/lumen-framework": "5.5.*",
+        "laravel/laravel": "5.5.*",
+        "barryvdh/laravel-ide-helper": "^2.4"
     },
     "autoload": {
         "psr-4": {
