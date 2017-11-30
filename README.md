@@ -6,7 +6,7 @@ Extends the core laravel framework, providing easier, faster development experie
 
 Check out the wiki to view examples and full documentation.
 
-[Wiki](https://github.com/kevupton/ethereal/wiki)
+## [Wiki](https://github.com/kevupton/ethereal/wiki)
 
 ----------
 
