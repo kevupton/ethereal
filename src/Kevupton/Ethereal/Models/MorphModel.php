@@ -20,8 +20,10 @@ class MorphModel extends Ethereal
 
     public function __construct (array $attributes = array())
     {
-        $this->touches[] = $this->getRelationshipName();
-        $this->relationships[$this->getRelationshipName()] = array(self::MORPH_ONE, $this->morphClass, $this->morphBy, $this->morphType, $this->morphId);
+        if ((new $this->morphClass)->timestamps) {
+            $this->touches[] = $this->getRelationshipName();
+        }
+        $this->relationships[$this->getRelationshipName()] = [self::MORPH_ONE, $this->morphClass, $this->morphBy, $this->morphType, $this->morphId];
         parent::__construct($attributes);
     }
 
@@ -31,7 +33,7 @@ class MorphModel extends Ethereal
      */
     public function getRelationshipName ()
     {
-        return $this->relationshipName ?: ($this->relationshipName = camel_case(last(explode("\\", $this->morphClass))));
+        return $this->relationshipName ?: ($this->relationshipName = camel_case(short_name($this->morphClass)));
     }
 
     /**
@@ -63,10 +65,14 @@ class MorphModel extends Ethereal
      */
     public function __get ($key)
     {
-        $morphModel = $this->getOrCreateMorphModel();
+        $relationshipName = $this->getRelationshipName();
 
-        if ($result = $morphModel->$key) {
-            return $result;
+        if ($key !== $relationshipName) {
+            $morphModel = $this->__get($relationshipName);
+
+            if (!is_null($result = $morphModel->$key)) {
+                return $result;
+            }
         }
 
         return parent::__get($key);
@@ -83,7 +89,7 @@ class MorphModel extends Ethereal
     {
         $morphModel = $this->getOrCreateMorphModel();
 
-        if (in_array($key, $morphModel->fillable)) {
+        if (in_array($key, $morphModel->getFillable() ?: [])) {
             $morphModel->$key = $value;
         } else {
             parent::__set($key, $value);
@@ -125,7 +131,7 @@ class MorphModel extends Ethereal
             return $morphModel;
         }
 
-        $this->relations[$this->getRelationshipName()] = $morphModel = new ($this->morphClass)();
+        return $this->relations[$this->getRelationshipName()] = $morphModel = new $this->morphClass();
     }
 
     /**
