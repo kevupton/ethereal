@@ -23,7 +23,7 @@ trait HasResourceInterface
      * @param array $actionOverrides
      * @param string $namespace
      */
-    public static function routes ($routes = ['index', 'store', 'show', 'update', 'delete'], $path = null, $actionOverrides = [], $namespace = '')
+    public static function routes ($routes = ['index', 'store', 'show', 'update', 'destroy'], $path = null, $actionOverrides = [], $namespace = '')
     {
         $path = $path ?: preg_replace('/_?controller/i', '', snake_case(short_name(static::class)));
         $mainActions = $actionOverrides;
@@ -35,6 +35,12 @@ trait HasResourceInterface
                 'as' => make_path('.', dot_namespace($namespace), snake_case($shortName))
             ], $mainActions);
         }
+
+        $modelName = snake_case(short_name(static::$class));
+
+        Route::bind($modelName, function ($id) {
+            return (static::$class)::findOrFail($id);
+        });
 
         $result = [];
 
@@ -58,13 +64,13 @@ trait HasResourceInterface
                     $route = Route::post($path, $actions);
                     break;
                 case 'show':
-                    $route = Route::get($path . '/{id}', $actions);
+                    $route = Route::get("$path/{{$modelName}}", $actions);
                     break;
                 case 'update':
-                    $route = Route::patch($path . '/{id}', $actions);
+                    $route = Route::patch("$path/{{$modelName}}", $actions);
                     break;
-                case 'delete':
-                    $route = Route::delete($path . '/{id}', $actions);
+                case 'destroy':
+                    $route = Route::delete("$path/{{$modelName}}", $actions);
                     break;
                 default:
                     continue;

@@ -8,7 +8,11 @@
 
 namespace Kevupton\Ethereal\Traits;
 
-
+/**
+ * @deprecated
+ * Trait HasQueryHelpers
+ * @package Kevupton\Ethereal\Traits
+ */
 trait HasQueryHelpers
 {
     public static function arraySelect ($id, $value = null, Builder $query = null, $group_by = true)

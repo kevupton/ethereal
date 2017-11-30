@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "1c5c979d7d605af0d5628693f0321806",
-    "content-hash": "6e1b4acbe16a624a11c735c410468ddc",
+    "hash": "ff2eace46d8a28abf9f981616aa76842",
+    "content-hash": "6386cc0e328f028de4ece304f8574e1a",
     "packages": [
         {
             "name": "kevupton/laravel-json-response",
-            "version": "v0.0.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kevupton/laravel-json-response.git",
-                "reference": "f2708143227cb93b225a5624ff6616adf2824b12"
+                "reference": "449938a9c811c15bf3b781535a60f4df384cb553"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kevupton/laravel-json-response/zipball/f2708143227cb93b225a5624ff6616adf2824b12",
-                "reference": "f2708143227cb93b225a5624ff6616adf2824b12",
+                "url": "https://api.github.com/repos/kevupton/laravel-json-response/zipball/449938a9c811c15bf3b781535a60f4df384cb553",
+                "reference": "449938a9c811c15bf3b781535a60f4df384cb553",
                 "shasum": ""
             },
             "require": {
@@ -54,7 +54,7 @@
                 "json",
                 "laravel"
             ],
-            "time": "2017-11-28 14:57:09"
+            "time": "2017-11-30 05:15:02"
         }
     ],
     "packages-dev": [
@@ -2568,7 +2568,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "kevupton/laravel-json-response": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
