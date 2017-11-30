@@ -12,13 +12,13 @@ Check out the wiki to view examples and full documentation.
 
 
 ## **Installation:** ##
-####Download####
+#### Download
 Use composer to download the package into your project.
 
      composer require kevupton/ethereal
 
-####Setup####
-Then add the `Kevupton\Ethereal\Providers\EtherealServiceProvider` class to your `app.php` config file under `providers`
+#### Setup
+Then add the `Kevupton\Ethereal\Providers\EtherealServiceProvider` to your `app.php` config file under `providers`
 
 ```php
     'providers' => [
@@ -34,9 +34,7 @@ Then add the `Kevupton\Ethereal\Providers\EtherealServiceProvider` class to your
 ```
 
 
-There are currently no config or migrations, so there is no need to `vendor:publish`.
-
-####Basic Usage####
+#### Basic Usage
 
 Just extend the `Kevupton\Ethereal\Models\Ethereal` class instead of Laravel Model class, for each of your models you want Ethereal functionality. 
 
