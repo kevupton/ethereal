@@ -9,6 +9,11 @@ use Kevupton\Ethereal\Models\Ethereal;
 use Kevupton\LaravelJsonResponse\JsonResponse;
 use ReflectionClass;
 
+/**
+ * @deprecated
+ * Class Repository
+ * @package Kevupton\Ethereal\Repositories
+ */
 abstract class Repository
 {
     /**
