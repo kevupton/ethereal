@@ -14,11 +14,6 @@ class EtherealServiceProvider extends ServiceProvider {
     public function boot()
     {
         $this->app->register(LaravelJsonResponseProvider::class);
-
-        Model::saving(function ($model) {
-            if (!$model->validateModel || !method_exists($model, 'validate')) return;
-            $model->validate();
-        });
     }
 
     /**
