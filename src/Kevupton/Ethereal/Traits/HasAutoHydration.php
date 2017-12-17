@@ -38,6 +38,6 @@ trait HasAutoHydration
     public function hydrateModel ()
     {
         $original = $this->getAttributes();
-        $this->fill(array_merge(request()->all(), $original));
+        $this->fill(array_merge(app('request')->all(), $original));
     }
 }
