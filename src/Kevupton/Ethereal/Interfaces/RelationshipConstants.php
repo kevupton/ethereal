@@ -6,7 +6,7 @@
  * Time: 11:43 AM
  */
 
-namespace Kevupton\Ethereal\Models;
+namespace Kevupton\Ethereal\Interfaces;
 
 
 interface RelationshipConstants

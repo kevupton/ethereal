@@ -1,6 +1,5 @@
 <?php namespace Kevupton\Ethereal\Providers;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
 use Kevupton\LaravelJsonResponse\Providers\LaravelJsonResponseProvider;
 
