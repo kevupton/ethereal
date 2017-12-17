@@ -8,7 +8,6 @@
 
 namespace Kevupton\Ethereal\Interfaces;
 
-
 interface RelationshipConstants
 {
     const HAS_MANY = "hasMany";

@@ -1,6 +1,7 @@
 <?php namespace Kevupton\Ethereal\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Kevupton\Ethereal\Interfaces\RelationshipConstants;
 use Kevupton\Ethereal\Traits\HasAutoHydration;
 use Kevupton\Ethereal\Traits\HasDynamicRelationships;
 use Kevupton\Ethereal\Traits\HasEventListeners;
