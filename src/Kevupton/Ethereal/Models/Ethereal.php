@@ -1,11 +1,11 @@
 <?php namespace Kevupton\Ethereal\Models;
 
-use App\Traits\HasMemory;
 use Illuminate\Database\Eloquent\Model;
 use Kevupton\Ethereal\Interfaces\RelationshipConstants;
 use Kevupton\Ethereal\Traits\HasAutoHydration;
 use Kevupton\Ethereal\Traits\HasDynamicRelationships;
 use Kevupton\Ethereal\Traits\HasEventListeners;
+use Kevupton\Ethereal\Traits\HasMemory;
 use Kevupton\Ethereal\Traits\HasSingletonMethods;
 use Kevupton\Ethereal\Traits\HasTableColumns;
 use Kevupton\Ethereal\Traits\HasValidation;

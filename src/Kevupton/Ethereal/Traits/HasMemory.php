@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Traits;
+namespace Kevupton\Ethereal\Traits;
 
 trait HasMemory
 {
