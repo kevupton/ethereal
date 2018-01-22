@@ -26,4 +26,35 @@ trait HasMemory
             return $this->_memory[$key] = $callable;
         }
     }
+
+    /**
+     * Checks whether a specific key has been remembered
+     *
+     * @param $key
+     * @return bool
+     */
+    protected function hasMemory ($key)
+    {
+        return array_key_exists($key, $this->_memory);
+    }
+
+    /**
+     * Wipes all items from the memory
+     */
+    protected function clearMemory ()
+    {
+        $this->_memory = [];
+    }
+
+    /**
+     * Forgets a specific key in the memory
+     *
+     * @param $key
+     */
+    public function forget ($key)
+    {
+        if (array_key_exists($key, $this->_memory)) {
+            unset($this->_memory[$key]);
+        }
+    }
 }
