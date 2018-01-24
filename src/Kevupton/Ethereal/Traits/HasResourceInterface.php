@@ -4,7 +4,6 @@ namespace Kevupton\Ethereal\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Kevupton\Ethereal\Exceptions\ResourceException;
 use Route;
 
 trait HasResourceInterface
@@ -86,7 +85,7 @@ trait HasResourceInterface
      *
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    protected function index ()
+    public function index ()
     {
         return (static::$class)::paginate($this->paginate);
     }
@@ -97,9 +96,8 @@ trait HasResourceInterface
      *
      * @param Request $request
      * @return Model
-     * @throws ResourceException
      */
-    protected function store (Request $request)
+    public function store (Request $request)
     {
         return (static::$class)::create($request->all());
     }
@@ -112,7 +110,7 @@ trait HasResourceInterface
      * @return mixed
      * @internal param Request $request
      */
-    protected function show (Model $model)
+    public function show (Model $model)
     {
         /** @var Model $model */
         return $model;
@@ -126,7 +124,7 @@ trait HasResourceInterface
      * @param Model $model
      * @return Model
      */
-    protected function update (Request $request, Model $model)
+    public function update (Request $request, Model $model)
     {
         $model->fill($request->all())->save();
         return $model;
@@ -138,8 +136,9 @@ trait HasResourceInterface
      *
      * @param Model $model
      * @return Model
+     * @throws \Exception
      */
-    protected function destroy (Model $model)
+    public function destroy (Model $model)
     {
         $model->delete();
         return $model;
