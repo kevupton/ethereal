@@ -36,8 +36,9 @@ trait HasResourceInterface
         }
 
         $modelName = snake_case(short_name(static::$class));
+        $router = router();
 
-        Route::bind($modelName, function ($id) {
+        $router->bind($modelName, function ($id) {
             return (static::$class)::findOrFail($id);
         });
 
@@ -57,19 +58,19 @@ trait HasResourceInterface
 
             switch ($key) {
                 case 'index':
-                    $route = Route::get($path, $actions);
+                    $route = $router->get($path, $actions);
                     break;
                 case 'store':
-                    $route = Route::post($path, $actions);
+                    $route = $router->post($path, $actions);
                     break;
                 case 'show':
-                    $route = Route::get("$path/{{$modelName}}", $actions);
+                    $route = $router->get("$path/{{$modelName}}", $actions);
                     break;
                 case 'update':
-                    $route = Route::patch("$path/{{$modelName}}", $actions);
+                    $route = $router->patch("$path/{{$modelName}}", $actions);
                     break;
                 case 'destroy':
-                    $route = Route::delete("$path/{{$modelName}}", $actions);
+                    $route = $router->delete("$path/{{$modelName}}", $actions);
                     break;
                 default:
                     continue;
