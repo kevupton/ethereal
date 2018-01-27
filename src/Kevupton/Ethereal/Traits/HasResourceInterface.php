@@ -4,7 +4,6 @@ namespace Kevupton\Ethereal\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Route;
 
 trait HasResourceInterface
 {
@@ -15,32 +14,51 @@ trait HasResourceInterface
     protected $paginate = 10;
 
     /**
+     * Gets the model from the id given
+     *
+     * @param $id
+     * @return Model
+     */
+    private static function model (&$id)
+    {
+        if ($id instanceof Model) {
+            return $id;
+        }
+
+        $id = (static::$class)::findOrFail($id);
+
+        return $id;
+    }
+
+    /**
      * Instantiates the routes based on the controller name or path specified
      *
-     * @param array $routes
-     * @param null $path
-     * @param array $actionOverrides
+     * @param array  $routes
+     * @param null   $path
+     * @param array  $actionOverrides
      * @param string $namespace
      */
     public static function routes ($routes = ['index', 'store', 'show', 'update', 'destroy'], $path = null, $actionOverrides = [], $namespace = '')
     {
-        $path = $path ?: preg_replace('/_?controller/i', '', snake_case(short_name(static::class)));
+        $path        = $path ?: preg_replace('/_?controller/i', '', snake_case(short_name(static::class)));
         $mainActions = $actionOverrides;
-        $shortName = short_name(static::class);
+        $shortName   = short_name(static::class);
 
         if (is_array($actionOverrides)) {
             $mainActions = array_merge([
                 'uses' => make_namespace($namespace, $shortName),
-                'as' => make_path('.', dot_namespace($namespace), snake_case($shortName))
+                'as'   => make_path('.', dot_namespace($namespace), snake_case($shortName)),
             ], $mainActions);
         }
 
         $modelName = snake_case(short_name(static::$class));
-        $router = router();
+        $router    = router();
 
-        $router->bind($modelName, function ($id) {
-            return (static::$class)::findOrFail($id);
-        });
+        if (method_exists($router, 'bind')) {
+            $router->bind($modelName, function ($id) {
+                return self::model($id);
+            });
+        }
 
         $result = [];
 
@@ -50,7 +68,7 @@ trait HasResourceInterface
             // append each of the routes to the controller method and the name.
             if (is_array($actions)) {
                 $actions['uses'] = $actions['uses'] . "@$key";
-                $actions['as'] = $actions['uses'] . ".$key";
+                $actions['as']   = $actions['uses'] . ".$key";
             }
 
             /** @var \Illuminate\Routing\Route $route */
@@ -111,10 +129,9 @@ trait HasResourceInterface
      * @return mixed
      * @internal param Request $request
      */
-    public function show (Model $model)
+    public function show ($model)
     {
-        /** @var Model $model */
-        return $model;
+        return self::model($model);
     }
 
     /**
@@ -122,12 +139,15 @@ trait HasResourceInterface
      * Override to change the default logic query.
      *
      * @param Request $request
-     * @param Model $model
+     * @param Model   $model
      * @return Model
      */
-    public function update (Request $request, Model $model)
+    public function update (Request $request, $model)
     {
-        $model->fill($request->all())->save();
+        self::model($model)
+            ->fill($request->all())
+            ->save();
+
         return $model;
     }
 
@@ -141,7 +161,7 @@ trait HasResourceInterface
      */
     public function destroy (Model $model)
     {
-        $model->delete();
+        self::model($model)->delete();
         return $model;
     }
 }
