@@ -102,9 +102,10 @@ trait HasResourceInterface
      * Function which handles the main results for the index logic.
      * Override to create custom logic.
      *
+     * @param Request $request
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function index ()
+    public function index (Request $request)
     {
         return (static::$class)::paginate($this->paginate);
     }
@@ -155,11 +156,12 @@ trait HasResourceInterface
      * The delete logic of the program. Returns the results to be displayed.
      * Override to change the default logic query.
      *
-     * @param Model $model
+     * @param Request $request
+     * @param Model   $model
      * @return Model
      * @throws \Exception
      */
-    public function destroy (Model $model)
+    public function destroy (Request $request, $model)
     {
         self::model($model)->delete();
         return $model;
