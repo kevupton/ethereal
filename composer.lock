@@ -4,21 +4,21 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "fe0b8598c2cd93b53631bff63f394245",
-    "content-hash": "ff87b5228636fb0e123e0b28078bb5b7",
+    "hash": "a7e1b502ea4faf4080a4085b912aa7e4",
+    "content-hash": "9ea945835fe86ad13ec2f0a5bf135ac7",
     "packages": [
         {
             "name": "kevupton/laravel-json-response",
-            "version": "v0.0.8",
+            "version": "v0.0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kevupton/laravel-json-response.git",
-                "reference": "e8ab7ddcbaf9e2bcff3b9f96e92f9105eab4edee"
+                "reference": "abe4124eb62b4ba6ca4ba37d635fb231455f4b5f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/kevupton/laravel-json-response/zipball/e8ab7ddcbaf9e2bcff3b9f96e92f9105eab4edee",
-                "reference": "e8ab7ddcbaf9e2bcff3b9f96e92f9105eab4edee",
+                "url": "https://api.github.com/repos/kevupton/laravel-json-response/zipball/abe4124eb62b4ba6ca4ba37d635fb231455f4b5f",
+                "reference": "abe4124eb62b4ba6ca4ba37d635fb231455f4b5f",
                 "shasum": ""
             },
             "require": {
@@ -54,7 +54,7 @@
                 "json",
                 "laravel"
             ],
-            "time": "2018-01-14 02:33:40"
+            "time": "2018-01-16 13:45:01"
         }
     ],
     "packages-dev": [
