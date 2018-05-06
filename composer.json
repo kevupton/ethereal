@@ -11,8 +11,8 @@
         }
     ],
     "require": {
-      "php": ">=5.3",
-      "kevupton/laravel-json-response": "0.0.9"
+        "php": ">=5.3",
+        "kevupton/laravel-json-response": "^0.0.10"
     },
     "require-dev": {
         "laravel/lumen-framework": "5.5.*",
